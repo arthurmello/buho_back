@@ -1,0 +1,24 @@
+[tool.poetry]
+name = "backend-fastapi"
+version = "0.1.0"
+description = ""
+authors = ["Abdelrahman Soliman <bebofit@aucegypt.edu>"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.10"
+fastapi = "^0.110.1"
+openai = "^1.16.2"
+langchain = "^0.1.14"
+langchain-openai = "^0.1.1"
+docx2txt = "^0.8"
+pypdf = "^4.1.0"
+streamlit = "^1.33.0"
+tiktoken = "^0.6.0"
+python-multipart = "^0.0.9"
+chromadb = "^0.4.24"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
