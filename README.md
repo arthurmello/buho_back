@@ -14,10 +14,10 @@ To set up the project, follow these steps:
     poetry install
     ```
 
-3. Set your OpenAI secret key in the `.envrc` file. Make sure to replace `YOUR_SECRET_KEY` with your actual secret key:
+3. Set your OpenAI secret key in the `.env` file. Make sure to replace `YOUR_SECRET_KEY` with your actual secret key:
 
     ```shell
-    echo 'OPENAI_SECRET_KEY=YOUR_SECRET_KEY' >> .envrc
+    echo 'OPENAI_SECRET_KEY=YOUR_SECRET_KEY' >> .env
     ```
 
 4. Activate the environment and run the main script:
