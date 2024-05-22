@@ -17,7 +17,7 @@ RUN pip install poetry
 RUN poetry install
 
 # Make port available to the world outside this container
-EXPOSE 8080
+# EXPOSE 8080
 
 # Command to run the main script
 CMD ["poetry", "run", "python", "-m", "main"]
