@@ -4,8 +4,6 @@ steps:
   - 'build'
   - '-t'
   - 'gcr.io/buho-421304/git-deploy/back:$SHORT_SHA'
-  - '-f'
-  - 'Dockerfile.${_ENV}'
   - '.'
 - name: 'gcr.io/cloud-builders/docker'
   args: ['push', 'gcr.io/buho-421304/git-deploy/back:$SHORT_SHA']
