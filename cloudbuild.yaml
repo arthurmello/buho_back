@@ -18,5 +18,7 @@ steps:
     - '--image=gcr.io/buho-421304/git-deploy/back:$SHORT_SHA'
     - '--set-env-vars'
     - 'EMBEDDING_MODEL_NAME=${_EMBEDDING_MODEL_NAME}'
+    - '--set-env-vars'
     - 'HUGGINGFACEHUB_API_TOKEN=${_HUGGINGFACEHUB_API_TOKEN}'
+    - '--set-env-vars'
     - 'OPENAI_API_KEY=${_OPENAI_API_KEY}'
