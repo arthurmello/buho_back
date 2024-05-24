@@ -16,3 +16,7 @@ steps:
     - '--platform=managed'
     - '--allow-unauthenticated'
     - '--image=gcr.io/buho-421304/git-deploy/back:$SHORT_SHA'
+  env:
+  - 'EMBEDDING_MODEL_NAME=${_EMBEDDING_MODEL_NAME}'
+  - 'HUGGINGFACEHUB_API_TOKEN=${_HUGGINGFACEHUB_API_TOKEN}'
+  - 'OPENAI_API_KEY=${_OPENAI_API_KEY}'
