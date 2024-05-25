@@ -39,7 +39,7 @@ def load_document(file):
 
 
 # splitting data in chunks
-def chunk_data(data, chunk_size=1024, chunk_overlap=100):
+def chunk_data(data, chunk_size=512, chunk_overlap=50):
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size, chunk_overlap=chunk_overlap,
         separators=[". ", ", ", " "]
@@ -65,11 +65,11 @@ def create_embeddings(chunks, persist_directory="./mychroma_db"):
     return vector_store
 
 def format_sources(source_documents):
-    formatted_sources = '\n'.join(
+    formatted_sources = '\n\n'.join(
         [
         f"\"{doc.page_content}\"\
-        \nFile:{doc.metadata['source'].split('/')[-1]}\
-        \nPage:{doc.metadata['page']}"
+        \nFile: {doc.metadata['source'].split('/')[-1]}\
+        \nPage: {doc.metadata['page']}"
         for doc in source_documents
         ]
     )
@@ -89,7 +89,7 @@ def ask_and_get_answer(vector_store, q, k=10):
     answer = chain.invoke(q)
 
     sources = format_sources(answer["source_documents"])
-    result = f"{answer['result']}\nSources: {sources}"
+    result = f"{answer['result']}\nSources:\n{sources}"
     return result
 
 
