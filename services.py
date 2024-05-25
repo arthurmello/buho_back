@@ -41,8 +41,7 @@ def load_document(file):
 # splitting data in chunks
 def chunk_data(data, chunk_size=512, chunk_overlap=50):
     text_splitter = RecursiveCharacterTextSplitter(
-        chunk_size=chunk_size, chunk_overlap=chunk_overlap,
-        separators=[". ", ", ", " "]
+        chunk_size=chunk_size, chunk_overlap=chunk_overlap
     )
     chunks = text_splitter.split_documents(data)
     return chunks
@@ -67,9 +66,9 @@ def create_embeddings(chunks, persist_directory="./mychroma_db"):
 def format_sources(source_documents):
     formatted_sources = '\n\n'.join(
         [
-        f"\"{doc.page_content}\"\
-        \nFile: {doc.metadata['source'].split('/')[-1]}\
-        \nPage: {doc.metadata['page']}"
+        f"-\"{doc.page_content}\"\
+        \n**File**: {doc.metadata['source'].split('/')[-1]}\
+        \n**Page**: {doc.metadata['page']}"
         for doc in source_documents
         ]
     )
@@ -77,10 +76,13 @@ def format_sources(source_documents):
 
 def ask_and_get_answer(vector_store, q, k=10):
 
-    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=1)
+    llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
     retriever = vector_store.as_retriever(
-        search_type="mmr", search_kwargs={"k": k}
+        search_type="similarity_score_threshold", search_kwargs={"k": k, "score_threshold": 0.5}
     )
+    # for doc in vector_store.similarity_search_with_score(q, k):
+    #     print(doc)
+
     chain = RetrievalQA.from_chain_type(
         llm=llm, chain_type="stuff", retriever=retriever,
         chain_type_kwargs={"verbose": True},
@@ -89,7 +91,7 @@ def ask_and_get_answer(vector_store, q, k=10):
     answer = chain.invoke(q)
 
     sources = format_sources(answer["source_documents"])
-    result = f"{answer['result']}\nSources:\n{sources}"
+    result = f"{answer['result']}\n#Sources:\n{sources}"
     return result
 
 
@@ -98,6 +100,4 @@ def calculate_embedding_cost(texts):
     enc = tiktoken.encoding_for_model(embedding_model)
     total_tokens = sum([len(enc.encode(page.page_content)) for page in texts])
     # check prices here: https://openai.com/pricing
-    print(f'Total Tokens: {total_tokens}')
-    print(f'Embedding Cost in USD: {total_tokens / 1000 * 0.00002:.6f}')
     return total_tokens, total_tokens / 1000 * 0.00013

@@ -72,7 +72,9 @@ async def upload_files(files: List[UploadFile], directory = "./files/"):
             print(f"File {file.filename} is not allowed skipping")
 
     tokens, embedding_cost = calculate_embedding_cost(chunks)
-    print(f"Total tokens: {tokens}")
+    
+    print(f'Total Tokens: {tokens}')
+    print(f'Embedding Cost in USD: {embedding_cost:.6f}')
     # vector store temp
     global vector_store
     vector_store = create_embeddings(chunks)
