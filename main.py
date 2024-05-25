@@ -89,12 +89,12 @@ class AskQuestionRequest(BaseModel):
 @app.post("/ask")
 async def ask_question(body: AskQuestionRequest):
     if vector_store:
-        answer = ask_and_get_answer(vector_store, body.question)
-        qas.append({"question": body.question, "answer": answer, "owner": body.owner})
+        answer, sources = ask_and_get_answer(vector_store, body.question)
+        qas.append({"question": body.question, "answer": answer, "sources": sources, "owner": body.owner})
     else:
         return {"error": "Please upload a file first"}
 
-    return {"answer": answer, "history": qas}
+    return {"answer": answer, "sources": sources, "history": qas}
 
 
 if __name__ == "__main__":

@@ -72,6 +72,7 @@ def format_sources(source_documents):
         for doc in source_documents
         ]
     )
+    print(formatted_sources)
     return formatted_sources
 
 def ask_and_get_answer(vector_store, q, k=10):
@@ -90,9 +91,16 @@ def ask_and_get_answer(vector_store, q, k=10):
     )
     answer = chain.invoke(q)
 
-    sources = format_sources(answer["source_documents"])
-    result = f"{answer['result']}\n## Sources\n{sources}"
-    return result
+    # sources = format_sources(answer["source_documents"])
+    # result = f"{answer['result']}\n## Sources\n{sources}"
+    result = answer['result'],
+    sources = [{
+            "page_content": doc.page_content,
+            "file": doc.metadata['source'].split('/')[-1],
+            "page": doc.metadata['page']
+            } for doc in answer['source_documents']]
+    
+    return result, sources 
 
 
 # calculate embedding cost using tiktoken
