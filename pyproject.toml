@@ -1,8 +1,8 @@
 [tool.poetry]
-name = "backend-fastapi"
+name = "buho-back"
 version = "0.1.0"
 description = ""
-authors = ["Abdelrahman Soliman <bebofit@aucegypt.edu>"]
+authors = ["Arthur Mello <arthur.bmello@gmail.com>"]
 readme = "README.md"
 
 [tool.poetry.dependencies]
@@ -16,7 +16,7 @@ pypdf = "^4.1.0"
 streamlit = "^1.33.0"
 tiktoken = "^0.6.0"
 python-multipart = "^0.0.9"
-chromadb = "^0.4.24"
+chromadb = "^0.4.14"
 
 
 [build-system]
