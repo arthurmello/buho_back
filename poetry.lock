@@ -462,7 +462,7 @@ numpy = "*"
 
 [[package]]
 name = "chromadb"
-version = "0.4.24"
+version = "0.4.14"
 description = "Chroma."
 optional = false
 python-versions = ">=3.8"
