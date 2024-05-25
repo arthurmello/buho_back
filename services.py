@@ -67,8 +67,8 @@ def format_sources(source_documents):
     formatted_sources = '\n\n'.join(
         [
         f"- \"{doc.page_content}\"\
-        \**File**: {doc.metadata['source'].split('/')[-1]}\
-        \**Page**: {doc.metadata['page']}"
+        \n**File**: {doc.metadata['source'].split('/')[-1]}\
+        \n**Page**: {doc.metadata['page']}"
         for doc in source_documents
         ]
     )
@@ -91,7 +91,7 @@ def ask_and_get_answer(vector_store, q, k=10):
     answer = chain.invoke(q)
 
     sources = format_sources(answer["source_documents"])
-    result = f"{answer['result']}\n# Sources:\{sources}"
+    result = f"{answer['result']}\n## Sources:\n{sources}"
     return result
 
 
