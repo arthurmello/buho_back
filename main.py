@@ -17,6 +17,7 @@ from services import (
 
 # temp qas
 qas = []
+qas_tracker = []
 vector_store = None
 
 
@@ -29,6 +30,10 @@ app.add_middleware(
     allow_headers=["*"],
     expose_headers=["*"]
 )
+
+class AskQuestionRequest(BaseModel):
+    question: str
+    owner: str
 
 
 @app.get("/")
@@ -48,6 +53,24 @@ def reset_qas():
     global vector_store
     vector_store = None
     return {"message": "QAs reset successfully"}
+
+
+@app.get("/qas_tracker")
+def get_qas_tracker():
+    return {"qas_tracker": qas_tracker}
+
+
+@app.get("/qas_tracker/reset")
+def reset_qas_tracker():
+    global qas_tracker
+    qas_tracker = []
+    return {"message": "QAs tracker reset successfully"}
+
+@app.post("/qas_tracker/add")
+async def add_question_to_qas_tracker(body: AskQuestionRequest):
+    qas_tracker.append({"question": body.question, "owner": body.owner})
+    
+    return {"message": "Question added successfully"}
 
 
 @app.post("/upload")
@@ -79,11 +102,6 @@ async def upload_files(files: List[UploadFile], directory = "./files/"):
     global vector_store
     vector_store = create_embeddings(chunks)
     return {"message": "Files uploaded successfully", "cost": embedding_cost}
-
-
-class AskQuestionRequest(BaseModel):
-    question: str
-    owner: str
 
 
 @app.post("/ask")
