@@ -74,8 +74,8 @@ def ask_and_get_answer(vector_store, q, k=10):
     retriever = vector_store.as_retriever(
         search_type="similarity_score_threshold", search_kwargs={"k": k, "score_threshold": 0.4}
     )
-    for doc in vector_store.similarity_search_with_score(q, k):
-        print(doc)
+    # for doc in vector_store.similarity_search_with_score(q, k):
+    #     print(doc)
 
     chain = RetrievalQA.from_chain_type(
         llm=llm, chain_type="stuff", retriever=retriever,
