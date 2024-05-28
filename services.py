@@ -39,7 +39,7 @@ def load_document(file):
         print("Document format is not supported!")
         return None
     
-    print(f"Loading {file}")
+    print(f'Loading "{file}"')
     data = loader.load()
     for doc in data:
         doc.page_content = doc.page_content.replace('\n', ' ')
@@ -65,28 +65,17 @@ def create_embeddings(chunks, persist_directory="./mychroma_db"):
     vector_store = Chroma.from_documents(
         chunks, embeddings, persist_directory=persist_directory
     )
+    print(f"Embeddings created on {persist_directory}.")
     return vector_store
-
-def format_sources(source_documents):
-    formatted_sources = "\n --- \n".join(
-        [
-        f"""> _\"{doc.page_content}\"_
-        \n  > **File**: {doc.metadata['source'].split('/')[-1]}
-        \n  > **Page**: {doc.metadata['page']}"""
-        for doc in source_documents
-        ]
-    )
-    print(formatted_sources)
-    return formatted_sources
 
 def ask_and_get_answer(vector_store, q, k=10):
 
     llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
     retriever = vector_store.as_retriever(
-        search_type="similarity_score_threshold", search_kwargs={"k": k, "score_threshold": 0.5}
+        search_type="similarity_score_threshold", search_kwargs={"k": k, "score_threshold": 0.4}
     )
-    # for doc in vector_store.similarity_search_with_score(q, k):
-    #     print(doc)
+    for doc in vector_store.similarity_search_with_score(q, k):
+        print(doc)
 
     chain = RetrievalQA.from_chain_type(
         llm=llm, chain_type="stuff", retriever=retriever,
@@ -95,13 +84,11 @@ def ask_and_get_answer(vector_store, q, k=10):
     )
     answer = chain.invoke(q)
 
-    # sources = format_sources(answer["source_documents"])
-    # result = f"{answer['result']}\n## Sources\n{sources}"
     result = answer['result'],
     sources = [{
             "page_content": doc.page_content,
-            "file": doc.metadata['source'].split('/')[-1],
-            "page": doc.metadata['page']
+            "file": doc.metadata.get('source').split('/')[-1],
+            "page": doc.metadata.get('page', '-')
             } for doc in answer['source_documents']]
     
     return result, sources 

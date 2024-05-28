@@ -93,8 +93,9 @@ async def upload_files(files: List[UploadFile], directory = files_directory):
                 f.write(bytes_data)
             data = load_document(file_name)
             chunks.extend(chunk_data(data))
+            print(f'Chunks for "{file.filename}" created.')
         else:
-            print(f"File {file.filename} is not allowed skipping")
+            print(f'File "{file.filename}" extension is not supported. Supported extensions: {allowed_extensions}')
 
     tokens, embedding_cost = calculate_embedding_cost(chunks)
     
@@ -109,12 +110,12 @@ async def upload_files(files: List[UploadFile], directory = files_directory):
 @app.get("/files/list")
 async def list_files():
     if vector_store:
-        files_list = set(
-            [
-                meta["source"].split('/')[-1] for meta in vector_store.get()["metadatas"]
+        files_list = [
+            name.split('/')[-1] for name in set(
+                [meta["source"] for meta in vector_store.get()["metadatas"]]
+                )
             ]
-        )
-        files = [{"name":file for file in files_list}]
+        files = [{"name":file} for file in files_list]
     else:
         files = [{}]
     return files
