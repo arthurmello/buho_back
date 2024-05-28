@@ -72,7 +72,7 @@ def ask_and_get_answer(vector_store, q, k=10):
 
     llm = ChatOpenAI(model="gpt-3.5-turbo", temperature=0)
     retriever = vector_store.as_retriever(
-        search_type="similarity_score_threshold", search_kwargs={"k": k, "score_threshold": 0.4}
+        search_type="similarity_score_threshold", search_kwargs={"k": k, "score_threshold": 0.3}
     )
     # for doc in vector_store.similarity_search_with_score(q, k):
     #     print(doc)

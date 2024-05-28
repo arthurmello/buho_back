@@ -117,7 +117,7 @@ async def list_files():
             ]
         files = [{"name":file} for file in files_list]
     else:
-        files = [{}]
+        files = []
     return files
 
 @app.post("/ask")
