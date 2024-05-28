@@ -12,11 +12,12 @@ import shutil
 load_dotenv()
 openai_api_key=os.environ['OPENAI_API_KEY']
 embedding_model = "text-embedding-3-large"
+persist_directory="./mychroma_db"
 embeddings = OpenAIEmbeddings(
         model=embedding_model, openai_api_key=openai_api_key
     )
 
-def clear_directory(directory):
+def clear_directory(directory=persist_directory):
     if os.path.exists(directory):
         if os.path.isdir(directory):
             shutil.rmtree(directory)
@@ -56,7 +57,7 @@ def chunk_data(data, chunk_size=1024, chunk_overlap=100):
 
     
 # create embeddings using OpenAIEmbeddings() and save them in a Chroma vector store
-def create_embeddings(chunks, persist_directory="./mychroma_db"):
+def create_embeddings(chunks, persist_directory=persist_directory):
 
     # reset database
     clear_directory(persist_directory)

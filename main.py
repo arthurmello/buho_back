@@ -120,6 +120,14 @@ async def list_files():
         files = []
     return files
 
+@app.get("/files/reset")
+async def reset_files():
+    global vector_store
+    vector_store = None
+    clear_directory()
+    return {"message": "Vector database reset successfully"}
+
+
 @app.post("/ask")
 async def ask_question(body: AskQuestionRequest):
     if vector_store:
