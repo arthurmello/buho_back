@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "buho-back"
+name = "buho_back"
 version = "0.1.0"
 description = ""
 authors = ["Arthur Mello <arthur.bmello@gmail.com>"]
@@ -16,7 +16,7 @@ pypdf = "^4.1.0"
 streamlit = "^1.33.0"
 tiktoken = "^0.6.0"
 python-multipart = "^0.0.9"
-chromadb = "^0.4.14"
+chromadb = "0.4.14"
 
 
 [build-system]
