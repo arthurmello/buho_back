@@ -7,6 +7,7 @@ from langchain.chains import RetrievalQA
 import tiktoken
 import os
 from dotenv import load_dotenv
+import shutil
 
 load_dotenv()
 openai_api_key=os.environ['OPENAI_API_KEY']
@@ -14,6 +15,13 @@ embedding_model = "text-embedding-3-large"
 embeddings = OpenAIEmbeddings(
         model=embedding_model, openai_api_key=openai_api_key
     )
+
+def clear_directory(directory):
+    if os.path.exists(directory):
+        if os.path.isdir(directory):
+            shutil.rmtree(directory)
+            print(f"{directory} cleared!")
+
 
 # loading PDF, DOCX and TXT files as LangChain Documents
 def load_document(file):
@@ -46,16 +54,12 @@ def chunk_data(data, chunk_size=512, chunk_overlap=50):
     chunks = text_splitter.split_documents(data)
     return chunks
 
-
+    
 # create embeddings using OpenAIEmbeddings() and save them in a Chroma vector store
 def create_embeddings(chunks, persist_directory="./mychroma_db"):
 
     # reset database
-    import shutil
-
-    if os.path.exists(persist_directory):
-        if os.path.isdir(persist_directory):
-            shutil.rmtree(persist_directory)
+    clear_directory(persist_directory)
     
     # if you want to use a specific directory for chromadb
     vector_store = Chroma.from_documents(

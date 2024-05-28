@@ -13,13 +13,14 @@ from services import (
     chunk_data,
     create_embeddings,
     load_document,
+    clear_directory
 )
 
 # temp qas
 qas = []
 qas_tracker = []
 vector_store = None
-
+files_directory = "./files/"
 
 app = FastAPI()
 app.add_middleware(
@@ -74,8 +75,9 @@ async def add_question_to_qas_tracker(body: AskQuestionRequest):
 
 
 @app.post("/upload")
-async def upload_files(files: List[UploadFile], directory = "./files/"):
+async def upload_files(files: List[UploadFile], directory = files_directory):
     chunks = []
+    clear_directory(directory) #this first clear is for safety, just in case there were some remaining files
     if not os.path.exists(directory):
         os.makedirs(directory)
 
@@ -101,8 +103,21 @@ async def upload_files(files: List[UploadFile], directory = "./files/"):
     # vector store temp
     global vector_store
     vector_store = create_embeddings(chunks)
+    clear_directory(directory) # we clear the directory twice to avoid cluttering
     return {"message": "Files uploaded successfully", "cost": embedding_cost}
 
+@app.get("/files/list")
+async def list_files():
+    if vector_store:
+        files_list = set(
+            [
+                meta["source"].split('/')[-1] for meta in vector_store.get()["metadatas"]
+            ]
+        )
+        files = [{"name":file for file in files_list}]
+    else:
+        files = [{}]
+    return files
 
 @app.post("/ask")
 async def ask_question(body: AskQuestionRequest):
