@@ -13,7 +13,8 @@ from services import (
     chunk_data,
     create_embeddings,
     load_document,
-    clear_directory
+    clear_directory,
+    create_summaries
 )
 
 # temp qas
@@ -104,6 +105,7 @@ async def upload_files(files: List[UploadFile], directory = files_directory):
     # vector store temp
     global vector_store
     vector_store = create_embeddings(chunks)
+    create_summaries(chunks)
     clear_directory(directory) # we clear the directory twice to avoid cluttering
     return {"message": "Files uploaded successfully", "cost": embedding_cost}
 

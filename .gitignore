@@ -163,3 +163,4 @@ cython_debug/
 # Uploaded files and vector database
 files/
 mychroma_db/
+summaries/
