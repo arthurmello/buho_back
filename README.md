@@ -1,5 +1,5 @@
 # Buho Backend
-Backend for investment banking GenAI
+Backend for investment banking GenAI.
 
 ## Getting Started
 
