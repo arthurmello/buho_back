@@ -6,7 +6,7 @@ steps:
   - 'gcr.io/buho-421304/git-deploy/back:$SHORT_SHA'
   - '.'
 - name: 'gcr.io/cloud-builders/docker'
-  args: ['push', 'gcr.io/buho-421304/git-deploy/back:$SHORT_SHA']
+  args: ['push', 'gcr.io/$PROJECT_ID/git-deploy/back:$SHORT_SHA']
 - name: 'gcr.io/cloud-builders/gcloud'
   args:
     - 'run'
