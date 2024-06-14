@@ -161,6 +161,4 @@ cython_debug/
 #.idea/
 
 # Uploaded files and vector database
-files/
-mychroma_db/
-summaries/
+_data/

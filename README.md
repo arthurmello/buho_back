@@ -1,8 +1,7 @@
 # Buho Backend
-Backend for investment banking GenAI.
+Backend for investment banking assistant.
 
 ## Getting Started
-
 To set up the project, follow these steps:
 
 1. Create a virtual environment using Poetry:
@@ -26,7 +25,7 @@ To set up the project, follow these steps:
 4. Activate the environment and run the main script:
 
     ```shell
-    poetry run python -m main
+    poetry run python -m app.main
     ```
 
 Now you can run the project using Poetry and your OpenAI secret key.
