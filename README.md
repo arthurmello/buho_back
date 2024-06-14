@@ -25,7 +25,7 @@ To set up the project, follow these steps:
 4. Activate the environment and run the main script:
 
     ```shell
-    poetry run python -m app.main
+    poetry run python app/main.py
     ```
 
 Now you can run the project using Poetry and your OpenAI secret key.
