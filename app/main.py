@@ -5,8 +5,8 @@ import uvicorn
 from app.routers import (
     qa_tracker as qa_tracker_router,
     files as files_router,
-    chat as chat_router
-    )
+    chat as chat_router,
+)
 
 
 app = FastAPI()
@@ -17,12 +17,14 @@ app.add_middleware(
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["*"]
+    expose_headers=["*"],
 )
+
 
 @app.get("/")
 async def root():
     return {"message": "Hello World"}
+
 
 # Include routers
 app.include_router(qa_tracker_router.router, prefix="/qa_tracker", tags=["qa tracker"])

@@ -13,6 +13,7 @@ embedding_model = settings.EMBEDDING_MODEL
 vectordb_directory = settings.VECTORDB_DIRECTORY
 summaries_directory = settings.SUMMARIES_DIRECTORY
 
+
 # loading PDF, DOCX and TXT files as LangChain Documents
 def load_document(file):
 
@@ -27,11 +28,11 @@ def load_document(file):
     else:
         print("Document format is not supported!")
         return None
-    
+
     print(f'Loading "{file}"')
     data = loader.load()
     for doc in data:
-        doc.page_content = doc.page_content.replace('\n', ' ')
+        doc.page_content = doc.page_content.replace("\n", " ")
     return data
 
 
@@ -43,14 +44,14 @@ def create_chunks(data, chunk_size=1024, chunk_overlap=100):
     chunks = text_splitter.split_documents(data)
     return chunks
 
-    
+
 # create embeddings and save them in a vector store
 def create_vector_store(chunks):
 
     # reset database
     clear_directory(vectordb_directory)
     clear_directory(summaries_directory)
-    
+
     vector_store = Chroma.from_documents(
         chunks, embeddings, persist_directory=vectordb_directory
     )
@@ -66,13 +67,15 @@ def create_summaries(chunks, directory=summaries_directory):
 
     map_reduce_chain = map_reduce_setup(chat_model)
 
-    files = set([doc.metadata['source'].split('/')[-1] for doc in chunks])
+    files = set([doc.metadata["source"].split("/")[-1] for doc in chunks])
 
     for file in files:
-        file_chunks = [chunk for chunk in chunks if chunk.metadata['source'].split('/')[-1] == file]
+        file_chunks = [
+            chunk for chunk in chunks if chunk.metadata["source"].split("/")[-1] == file
+        ]
         result = map_reduce_chain.invoke(file_chunks)
         file_summary = result["output_text"]
-        file_name = file.split('.')[0]
+        file_name = file.split(".")[0]
         with open(f"{directory}/{file_name}.txt", "w+") as text_file:
             text_file.write(file_summary)
 

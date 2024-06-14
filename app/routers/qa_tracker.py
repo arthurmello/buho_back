@@ -8,16 +8,19 @@ qa_tracker = load_json(qa_tracker_file)
 
 router = APIRouter()
 
+
 @router.get("/")
 def get_qa_tracker():
     qa_tracker = load_json(qa_tracker_file)
     return {"qa_tracker": qa_tracker}
+
 
 @router.get("/reset")
 def reset_qa_tracker():
     qa_tracker = []
     dump_json(qa_tracker, qa_tracker_file)
     return {"message": "QA tracker reset successfully"}
+
 
 @router.post("/add")
 async def add_question_to_qa_tracker(body: AskQuestionRequest):
