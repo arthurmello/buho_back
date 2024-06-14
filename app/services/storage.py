@@ -8,16 +8,19 @@ from app.utils import embeddings
 
 vectordb_directory = settings.VECTORDB_DIRECTORY
 
+
 def clear_directory(directory):
     if os.path.exists(directory):
         if os.path.isdir(directory):
             shutil.rmtree(directory)
             print(f"{directory} cleared!")
 
+
 def dump_json(data, path):
     Path(path).parent.mkdir(parents=True, exist_ok=True)
-    with open(path, 'w+') as f:
+    with open(path, "w+") as f:
         json.dump(data, f)
+
 
 def load_json(path):
     try:
@@ -28,10 +31,13 @@ def load_json(path):
         result = []
     return result
 
+
 def get_vector_store():
     if os.path.exists(vectordb_directory):
         try:
-            vector_store = Chroma(persist_directory=vectordb_directory, embedding_function=embeddings)
+            vector_store = Chroma(
+                persist_directory=vectordb_directory, embedding_function=embeddings
+            )
         except Exception as e:
             print(f"Couldn't load vectorstore from {vectordb_directory}. Error: {e}")
             vector_store = None
