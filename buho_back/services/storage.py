@@ -3,8 +3,8 @@ import shutil
 from langchain_community.vectorstores import Chroma
 import json
 from pathlib import Path
-from app.config import settings
-from app.utils import embeddings
+from buho_back.config import settings
+from buho_back.utils import embeddings
 
 vectordb_directory = settings.VECTORDB_DIRECTORY
 

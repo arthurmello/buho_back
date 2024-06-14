@@ -1,10 +1,10 @@
 from fastapi import APIRouter, UploadFile
 from typing import List
 import os
-from app.config import settings
-from app.services.storage import clear_directory, get_vector_store
-from app.utils import calculate_embedding_cost
-from app.services.preprocessing import (
+from buho_back.config import settings
+from buho_back.services.storage import clear_directory, get_vector_store
+from buho_back.utils import calculate_embedding_cost
+from buho_back.services.preprocessing import (
     create_chunks,
     create_vector_store,
     load_document,

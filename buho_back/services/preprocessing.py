@@ -4,10 +4,10 @@ from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader, Te
 from langchain_community.vectorstores import Chroma
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
-from app.utils import chat_model, embeddings
-from app.config import settings
-from app.services.storage import clear_directory
-from app.services.chains import map_reduce_setup
+from buho_back.utils import chat_model, embeddings
+from buho_back.config import settings
+from buho_back.services.storage import clear_directory
+from buho_back.services.chains import map_reduce_setup
 
 embedding_model = settings.EMBEDDING_MODEL
 vectordb_directory = settings.VECTORDB_DIRECTORY
