@@ -20,4 +20,4 @@ RUN poetry install
 EXPOSE 8080
 
 # Command to run the main script
-CMD ["poetry", "run", "python", "-m", "main"]
+CMD ["poetry", "run", "python", "app.main"]
