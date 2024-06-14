@@ -2,7 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
-from app.routers import (
+from buho_back.routers import (
     qa_tracker as qa_tracker_router,
     files as files_router,
     chat as chat_router,

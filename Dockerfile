@@ -20,4 +20,4 @@ RUN poetry install
 EXPOSE 8080
 
 # Command to run the main script
-CMD ["poetry", "run", "python", "app/main.py"]
+CMD ["poetry", "run", "python", "-m","buho_back.main"]

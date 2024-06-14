@@ -1,5 +1,5 @@
 {
-    "data_directory" : "./app/_data",
+    "data_directory" : "./buho_back/_data",
     "vectordb_directory": "{data_directory}/mychroma_db",
     "summaries_directory": "{data_directory}/summaries",
     "files_directory" : "{data_directory}/files",

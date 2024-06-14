@@ -1,7 +1,7 @@
-from app.services.context import create_general_context, concatenate_chunks
-from app.services.retriever import retrieve_chunks
-from app.config import settings
-from app.utils import chat_model
+from buho_back.services.context import create_general_context, concatenate_chunks
+from buho_back.services.retriever import retrieve_chunks
+from buho_back.config import settings
+from buho_back.utils import chat_model
 
 n_sources_to_display = settings.N_SOURCES_TO_DISPLAY
 

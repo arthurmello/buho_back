@@ -1,6 +1,6 @@
 import tiktoken
 from langchain_openai import ChatOpenAI, OpenAIEmbeddings
-from app.config import settings
+from buho_back.config import settings
 
 openai_api_key = settings.OPENAI_API_KEY
 llm = settings.LLM
