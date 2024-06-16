@@ -1,8 +1,8 @@
 from fastapi import APIRouter
-from ..services.answer import get_answer_and_sources
-from ..models import AskQuestionRequest
-from ..config import settings
-from ..services.storage import dump_json, load_json, get_vector_store
+from buho_back.services.answer import get_answer_and_sources
+from buho_back.models import AskQuestionRequest
+from buho_back.config import settings
+from buho_back.services.storage import dump_json, load_json, get_vector_store
 
 router = APIRouter()
 
