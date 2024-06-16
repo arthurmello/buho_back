@@ -1,5 +1,5 @@
 import os
-from ..config import settings
+from buho_back.config import settings
 
 summaries_directory = settings.SUMMARIES_DIRECTORY
 

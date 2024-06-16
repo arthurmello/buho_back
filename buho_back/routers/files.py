@@ -13,6 +13,7 @@ from buho_back.services.preprocessing import (
 
 files_directory = settings.FILES_DIRECTORY
 vectordb_directory = settings.VECTORDB_DIRECTORY
+summaries_directory = settings.SUMMARIES_DIRECTORY
 
 router = APIRouter()
 
@@ -37,6 +38,7 @@ async def get_files():
 async def reset_files():
     clear_directory(vectordb_directory)
     clear_directory(files_directory)
+    clear_directory(summaries_directory)
     return {"message": "Vector database reset successfully"}
 
 
