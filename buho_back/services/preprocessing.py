@@ -1,6 +1,6 @@
 import os
 
-from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader, TextLoader
+from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader, TextLoader, UnstructuredExcelLoader
 from langchain_community.vectorstores import Chroma
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
@@ -25,6 +25,8 @@ def load_document(file):
         loader = Docx2txtLoader(file)
     elif extension == ".txt":
         loader = TextLoader(file)
+    elif extension in [".xls",".xlsx"]:
+        loader = UnstructuredExcelLoader(file)
     else:
         print("Document format is not supported!")
         return None

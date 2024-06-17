@@ -53,7 +53,7 @@ async def upload_files(files: List[UploadFile]):
 
     for file in files:
         # Check if the file extension is allowed
-        allowed_extensions = [".pdf", ".txt", ".docx"]
+        allowed_extensions = [".pdf", ".txt", ".docx", ".xlsx", ".xls"]
         if file.filename.endswith(tuple(allowed_extensions)):
             # Call the load_document function from services
             bytes_data = file.file.read()
