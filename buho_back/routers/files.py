@@ -9,7 +9,7 @@ from buho_back.services.preprocessing import (
     create_vector_store,
     load_document,
     create_summaries,
-    extension_loaders
+    extension_loaders,
 )
 
 files_directory = settings.FILES_DIRECTORY
@@ -34,6 +34,7 @@ async def get_files():
     else:
         files = []
     return files
+
 
 @router.get("/allowed_extensions")
 async def get_allowed_extensions():

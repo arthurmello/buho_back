@@ -1,6 +1,12 @@
 import os
 
-from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader, TextLoader, UnstructuredExcelLoader, UnstructuredPowerPointLoader
+from langchain_community.document_loaders import (
+    PyPDFLoader,
+    Docx2txtLoader,
+    TextLoader,
+    UnstructuredExcelLoader,
+    UnstructuredPowerPointLoader,
+)
 from langchain_community.vectorstores import Chroma
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
@@ -13,15 +19,15 @@ embedding_model = settings.EMBEDDING_MODEL
 vectordb_directory = settings.VECTORDB_DIRECTORY
 summaries_directory = settings.SUMMARIES_DIRECTORY
 extension_loaders = {
-        ".pdf": PyPDFLoader,
-        ".docx": Docx2txtLoader,
-        ".txt": TextLoader,
-        ".xlsx": UnstructuredExcelLoader,
-        ".xls": UnstructuredExcelLoader,
-        ".pptx": UnstructuredPowerPointLoader,
-        ".ppt": UnstructuredPowerPointLoader,
-        
-    }
+    ".pdf": PyPDFLoader,
+    ".docx": Docx2txtLoader,
+    ".txt": TextLoader,
+    ".xlsx": UnstructuredExcelLoader,
+    ".xls": UnstructuredExcelLoader,
+    ".pptx": UnstructuredPowerPointLoader,
+    ".ppt": UnstructuredPowerPointLoader,
+}
+
 
 # loading PDF, DOCX and TXT files as LangChain Documents
 def load_document(file):
