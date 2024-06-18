@@ -37,7 +37,7 @@ async def get_files():
 
 @router.get("/allowed_extensions")
 async def get_allowed_extensions():
-    return list(allowed_extensions)
+    return ','.join(list(allowed_extensions))
 
 
 @router.get("/reset")
