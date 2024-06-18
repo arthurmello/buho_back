@@ -16,6 +16,10 @@ RUN pip install poetry
 # Install project dependencies using Poetry
 RUN poetry install
 
+# Install libreoffice to use PPT loader
+RUN apt-get --no-install-recommends install libreoffice -y
+RUN apt-get install -y libreoffice-java-common
+
 # Make port available to the world outside this container
 EXPOSE 8080
 

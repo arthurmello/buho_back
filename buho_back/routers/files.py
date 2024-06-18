@@ -9,11 +9,13 @@ from buho_back.services.preprocessing import (
     create_vector_store,
     load_document,
     create_summaries,
+    extension_loaders
 )
 
 files_directory = settings.FILES_DIRECTORY
 vectordb_directory = settings.VECTORDB_DIRECTORY
 summaries_directory = settings.SUMMARIES_DIRECTORY
+allowed_extensions = extension_loaders.keys()
 
 router = APIRouter()
 
@@ -32,6 +34,10 @@ async def get_files():
     else:
         files = []
     return files
+
+@router.get("/allowed_extensions")
+async def get_allowed_extensions():
+    return list(allowed_extensions)
 
 
 @router.get("/reset")
@@ -53,7 +59,6 @@ async def upload_files(files: List[UploadFile]):
 
     for file in files:
         # Check if the file extension is allowed
-        allowed_extensions = [".pdf", ".txt", ".docx", ".xlsx", ".xls"]
         if file.filename.endswith(tuple(allowed_extensions)):
             # Call the load_document function from services
             bytes_data = file.file.read()

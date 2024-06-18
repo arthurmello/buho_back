@@ -1,6 +1,6 @@
 import os
 
-from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader, TextLoader, UnstructuredExcelLoader
+from langchain_community.document_loaders import PyPDFLoader, Docx2txtLoader, TextLoader, UnstructuredExcelLoader, UnstructuredPowerPointLoader
 from langchain_community.vectorstores import Chroma
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
@@ -12,22 +12,23 @@ from buho_back.services.chains import map_reduce_setup
 embedding_model = settings.EMBEDDING_MODEL
 vectordb_directory = settings.VECTORDB_DIRECTORY
 summaries_directory = settings.SUMMARIES_DIRECTORY
-
+extension_loaders = {
+        ".pdf": PyPDFLoader,
+        ".docx": Docx2txtLoader,
+        ".txt": TextLoader,
+        ".xlsx": UnstructuredExcelLoader,
+        ".xls": UnstructuredExcelLoader,
+        ".pptx": UnstructuredPowerPointLoader,
+        ".ppt": UnstructuredPowerPointLoader,
+        
+    }
 
 # loading PDF, DOCX and TXT files as LangChain Documents
 def load_document(file):
-
     name, extension = os.path.splitext(file)
-
-    if extension == ".pdf":
-        loader = PyPDFLoader(file)
-    elif extension == ".docx":
-        loader = Docx2txtLoader(file)
-    elif extension == ".txt":
-        loader = TextLoader(file)
-    elif extension in [".xls",".xlsx"]:
-        loader = UnstructuredExcelLoader(file)
-    else:
+    try:
+        loader = extension_loaders[extension](file)
+    except:
         print("Document format is not supported!")
         return None
 
