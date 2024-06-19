@@ -55,24 +55,27 @@ def create_chunks(data, chunk_size=1024, chunk_overlap=100):
 
 
 # create embeddings and save them in a vector store
-def create_vector_store(chunks):
+def create_vector_store(chunks, user_id):
+    user_vectordb_directory = os.path.join(vectordb_directory, user_id)
+    user_summaries_directory = os.path.join(summaries_directory, user_id)
 
     # reset database
-    clear_directory(vectordb_directory)
-    clear_directory(summaries_directory)
+    clear_directory(user_vectordb_directory)
+    clear_directory(user_summaries_directory)
 
     vector_store = Chroma.from_documents(
-        chunks, embeddings, persist_directory=vectordb_directory
+        chunks, embeddings, persist_directory=user_vectordb_directory
     )
-    print(f"Embeddings created on {vectordb_directory}.")
+    print(f"Embeddings created on {user_vectordb_directory}.")
     return vector_store
 
 
-def create_summaries(chunks, directory=summaries_directory):
+def create_summaries(chunks, user_id):
+    user_summaries_directory = os.path.join(summaries_directory, user_id)
     print("Creating summaries...")
-    clear_directory(directory)
-    if not os.path.exists(directory):
-        os.makedirs(directory)
+    clear_directory(user_summaries_directory)
+    if not os.path.exists(user_summaries_directory):
+        os.makedirs(user_summaries_directory)
 
     map_reduce_chain = map_reduce_setup(chat_model)
 
@@ -85,7 +88,7 @@ def create_summaries(chunks, directory=summaries_directory):
         result = map_reduce_chain.invoke(file_chunks)
         file_summary = result["output_text"]
         file_name = file.split(".")[0]
-        with open(f"{directory}/{file_name}.txt", "w+") as text_file:
+        with open(f"{user_summaries_directory}/{file_name}.txt", "w+") as text_file:
             text_file.write(file_summary)
 
-    print(f"Summaries created on {directory}.")
+    print(f"Summaries created on {user_summaries_directory}.")
