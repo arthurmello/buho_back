@@ -14,8 +14,9 @@ from buho_back.services.preprocessing import (
 
 data_directory = settings.DATA_DIRECTORY
 files_directory = settings.FILES_DIRECTORY
+vectordb_directory = settings.VECTORDB_DIRECTORY
+summaries_directory = settings.SUMMARIES_DIRECTORY
 allowed_extensions = extension_loaders.keys()
-
 router = APIRouter()
 
 
@@ -42,7 +43,9 @@ async def get_allowed_extensions():
 
 @router.get("/reset")
 async def reset_files(user_id: str = "user"):
-    clear_directory(os.path.join(data_directory, user_id))
+    clear_directory(os.path.join(files_directory, user_id))
+    clear_directory(os.path.join(vectordb_directory, user_id))
+    clear_directory(os.path.join(summaries_directory, user_id))
     return {"message": "Vector database reset successfully"}
 
 
@@ -50,7 +53,7 @@ async def reset_files(user_id: str = "user"):
 async def upload_files(files: List[UploadFile], user_id: str = "user"):
     chunks = []
     user_files_directory = os.path.join(files_directory, user_id)
-    clear_directory(user_files_directory)
+    reset_files(user_id)
     if not os.path.exists(user_files_directory):
         os.makedirs(user_files_directory)
 
