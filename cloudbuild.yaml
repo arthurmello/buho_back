@@ -18,6 +18,6 @@ steps:
     - '--image=gcr.io/$PROJECT_ID/git-deploy/back:$SHORT_SHA'
     - '--update-secrets'
     - 'OPENAI_API_KEY=projects/$PROJECT_NUMBER/secrets/openai_api_key:latest'
-    - '--memory=1Gi'
+    - '--memory=2Gi'
     - '--cpu=4'
     - '--timeout=600s'
