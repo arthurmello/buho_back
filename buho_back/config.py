@@ -12,7 +12,7 @@ class Settings(BaseSettings):
     # Hard-coded settings
     DATA_DIRECTORY: str = "./buho_back/_data"
     EMBEDDING_MODEL: str = "text-embedding-3-small"
-    LLM: str = "gpt-3.5-turbo"
+    LLM: str = "gpt-4o"
     N_SOURCES_TO_DISPLAY: int = 3
 
     @property

@@ -1,5 +1,6 @@
 from fastapi import APIRouter, UploadFile
 from typing import List
+import time
 import os
 from buho_back.config import settings
 from buho_back.services.storage import clear_directory, get_vector_store
@@ -51,6 +52,8 @@ async def reset_files(user_id: str = "user"):
 
 @router.post("/upload")
 async def upload_files(files: List[UploadFile], user_id: str = "user"):
+    start_time = time.time()
+
     chunks = []
     user_files_directory = os.path.join(files_directory, user_id)
     reset_files(user_id)
@@ -83,4 +86,8 @@ async def upload_files(files: List[UploadFile], user_id: str = "user"):
     create_vector_store(chunks, user_id)
     create_summaries(chunks, user_id)
     clear_directory(user_files_directory)
+
+    end_time = time.time()
+    total_runtime = round(end_time - start_time, 2)
+    print(f"Time to preprocess files: {total_runtime} s")
     return {"message": "Files uploaded successfully", "cost": embedding_cost}
