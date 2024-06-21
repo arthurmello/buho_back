@@ -61,12 +61,9 @@ async def upload_files(files: List[UploadFile], user_id: str = "user"):
         os.makedirs(user_files_directory)
 
     for file in files:
-        # Check if the file extension is allowed
         if file.filename.endswith(tuple(allowed_extensions)):
-            # Call the load_document function from services
             bytes_data = file.file.read()
             file_name = os.path.join(user_files_directory, file.filename)
-            # Save the file locally
             with open(file_name, "wb") as f:
                 f.write(bytes_data)
             data = load_document(file_name)
