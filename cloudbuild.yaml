@@ -19,3 +19,5 @@ steps:
     - '--update-secrets'
     - 'OPENAI_API_KEY=projects/$PROJECT_NUMBER/secrets/openai_api_key:latest'
     - '--memory=1Gi'
+    - '--cpu=4'
+    - '--timeout=600s'
