@@ -14,7 +14,7 @@ from buho_back.services.preprocessing import (
 )
 
 data_directory = settings.DATA_DIRECTORY
-files_directory = settings.FILES_DIRECTORY
+input_files_directory = settings.INPUT_FILES_DIRECTORY
 vectordb_directory = settings.VECTORDB_DIRECTORY
 summaries_directory = settings.SUMMARIES_DIRECTORY
 allowed_extensions = extension_loaders.keys()
@@ -44,7 +44,7 @@ async def get_allowed_extensions():
 
 @router.get("/reset")
 async def reset_files(user_id: str = "user"):
-    clear_directory(os.path.join(files_directory, user_id))
+    clear_directory(os.path.join(input_files_directory, user_id))
     clear_directory(os.path.join(vectordb_directory, user_id))
     clear_directory(os.path.join(summaries_directory, user_id))
     return {"message": "Vector database reset successfully"}
@@ -55,20 +55,20 @@ async def upload_files(files: List[UploadFile], user_id: str = "user"):
     start_time = time.time()
 
     chunks = []
-    user_files_directory = os.path.join(files_directory, user_id)
+    user_input_files_directory = os.path.join(input_files_directory, user_id)
     reset_files(user_id)
-    if not os.path.exists(user_files_directory):
-        os.makedirs(user_files_directory)
+    if not os.path.exists(user_input_files_directory):
+        os.makedirs(user_input_files_directory)
 
     for file in files:
         if file.filename.endswith(tuple(allowed_extensions)):
             bytes_data = file.file.read()
-            file_name = os.path.join(user_files_directory, file.filename)
-            with open(file_name, "wb") as f:
+            filename = os.path.join(user_input_files_directory, file.filename)
+            with open(filename, "wb") as f:
                 f.write(bytes_data)
-            data = load_document(file_name)
+            data = load_document(filename)
             chunks.extend(create_chunks(data))
-            print(f"{file_name=}")
+            print(f"{filename=}")
             print(f'Chunks for "{file.filename}" created.')
         else:
             print(
@@ -82,7 +82,7 @@ async def upload_files(files: List[UploadFile], user_id: str = "user"):
 
     create_vector_store(chunks, user_id)
     create_summaries(chunks, user_id)
-    clear_directory(user_files_directory)
+    clear_directory(user_input_files_directory)
 
     end_time = time.time()
     total_runtime = round(end_time - start_time, 2)

@@ -24,8 +24,12 @@ class Settings(BaseSettings):
         return f"{self.DATA_DIRECTORY}/summaries"
 
     @property
-    def FILES_DIRECTORY(self):
-        return f"{self.DATA_DIRECTORY}/files"
+    def INPUT_FILES_DIRECTORY(self):
+        return f"{self.DATA_DIRECTORY}/input_files"
+
+    @property
+    def OUTPUT_FILES_DIRECTORY(self):
+        return f"{self.DATA_DIRECTORY}/output_files"
 
     @property
     def CHAT_HISTORY_DIRECTORY(self):

@@ -141,11 +141,11 @@ def create_summaries(chunks, user_id):
     files = get_unique_files_from_chunks(chunks)
 
     for file in files:
-        file_name = file.split(".")[0]
-        print(f"... for file {file_name}")
+        filename = file.split(".")[0]
+        print(f"... for file {filename}")
         file_chunks = get_chunk_content_for_file(chunks, file)
         file_summary = summarize_and_aggregate_chunks(file_chunks)
-        with open(f"{user_summaries_directory}/{file_name}.txt", "w+") as text_file:
+        with open(f"{user_summaries_directory}/{filename}.txt", "w+") as text_file:
             text_file.write(file_summary)
 
     print(f"Summaries created on {user_summaries_directory}.")
