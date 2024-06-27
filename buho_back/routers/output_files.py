@@ -11,7 +11,7 @@ summaries_directory = settings.SUMMARIES_DIRECTORY
 router = APIRouter()
 
 
-@router.get("/generate")
+@router.post("/generate")
 async def generate_output_file(filename: str, user_id: str = "user"):
     start_time = time.time()
     output_file_path = generate_file(filename, user_id)
