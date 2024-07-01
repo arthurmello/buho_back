@@ -1,5 +1,6 @@
 from fastapi import APIRouter, UploadFile
 from typing import List
+import time
 import os
 from buho_back.config import settings
 from buho_back.services.storage import clear_directory, get_vector_store
@@ -9,18 +10,20 @@ from buho_back.services.preprocessing import (
     create_vector_store,
     load_document,
     create_summaries,
+    extension_loaders,
 )
 
-files_directory = settings.FILES_DIRECTORY
+data_directory = settings.DATA_DIRECTORY
+input_files_directory = settings.INPUT_FILES_DIRECTORY
 vectordb_directory = settings.VECTORDB_DIRECTORY
 summaries_directory = settings.SUMMARIES_DIRECTORY
-
+allowed_extensions = extension_loaders.keys()
 router = APIRouter()
 
 
 @router.get("/")
-async def get_files():
-    vector_store = get_vector_store()
+async def get_files(user_id: str = "user"):
+    vector_store = get_vector_store(user_id)
     if vector_store:
         files_list = [
             name.split("/")[-1]
@@ -34,36 +37,38 @@ async def get_files():
     return files
 
 
+@router.get("/allowed_extensions")
+async def get_allowed_extensions():
+    return list(allowed_extensions)
+
+
 @router.get("/reset")
-async def reset_files():
-    clear_directory(vectordb_directory)
-    clear_directory(files_directory)
-    clear_directory(summaries_directory)
+async def reset_files(user_id: str = "user"):
+    clear_directory(os.path.join(input_files_directory, user_id))
+    clear_directory(os.path.join(vectordb_directory, user_id))
+    clear_directory(os.path.join(summaries_directory, user_id))
     return {"message": "Vector database reset successfully"}
 
 
 @router.post("/upload")
-async def upload_files(files: List[UploadFile]):
+async def upload_files(files: List[UploadFile], user_id: str = "user"):
+    start_time = time.time()
+
     chunks = []
-    clear_directory(
-        files_directory
-    )  # this first clear is for safety, just in case there were some remaining files
-    if not os.path.exists(files_directory):
-        os.makedirs(files_directory)
+    user_input_files_directory = os.path.join(input_files_directory, user_id)
+    reset_files(user_id)
+    if not os.path.exists(user_input_files_directory):
+        os.makedirs(user_input_files_directory)
 
     for file in files:
-        # Check if the file extension is allowed
-        allowed_extensions = [".pdf", ".txt", ".docx"]
         if file.filename.endswith(tuple(allowed_extensions)):
-            # Call the load_document function from services
             bytes_data = file.file.read()
-            file_name = os.path.join(files_directory, file.filename)
-            # Save the file locally
-            with open(file_name, "wb") as f:
+            filename = os.path.join(user_input_files_directory, file.filename)
+            with open(filename, "wb") as f:
                 f.write(bytes_data)
-            data = load_document(file_name)
+            data = load_document(filename)
             chunks.extend(create_chunks(data))
-            print(f"{file_name=}")
+            print(f"{filename=}")
             print(f'Chunks for "{file.filename}" created.')
         else:
             print(
@@ -75,8 +80,11 @@ async def upload_files(files: List[UploadFile]):
     print(f"Total Tokens: {tokens}")
     print(f"Embedding Cost in USD: {embedding_cost:.6f}")
 
-    create_vector_store(chunks)
-    create_summaries(chunks)
+    create_vector_store(chunks, user_id)
+    create_summaries(chunks, user_id)
+    clear_directory(user_input_files_directory)
 
-    clear_directory(files_directory)  # we clear the directory twice to avoid cluttering
+    end_time = time.time()
+    total_runtime = round(end_time - start_time, 2)
+    print(f"Time to preprocess files: {total_runtime} s")
     return {"message": "Files uploaded successfully", "cost": embedding_cost}

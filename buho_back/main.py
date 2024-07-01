@@ -3,8 +3,9 @@ from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 
 from buho_back.routers import (
+    input_files as input_files_router,
+    output_files as output_files_router,
     qa_tracker as qa_tracker_router,
-    files as files_router,
     chat as chat_router,
 )
 
@@ -28,7 +29,12 @@ async def root():
 
 # Include routers
 app.include_router(qa_tracker_router.router, prefix="/qa_tracker", tags=["qa tracker"])
-app.include_router(files_router.router, prefix="/files", tags=["files"])
+app.include_router(
+    input_files_router.router, prefix="/input_files", tags=["input files"]
+)
+app.include_router(
+    output_files_router.router, prefix="/output_files", tags=["output files"]
+)
 app.include_router(chat_router.router, prefix="/chat", tags=["chat"])
 
 if __name__ == "__main__":

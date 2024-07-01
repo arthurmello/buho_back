@@ -32,14 +32,18 @@ def load_json(path):
     return result
 
 
-def get_vector_store():
-    if os.path.exists(vectordb_directory):
+def get_vector_store(user_id):
+    user_vector_store_directory = os.path.join(vectordb_directory, user_id)
+    if os.path.exists(user_vector_store_directory):
         try:
             vector_store = Chroma(
-                persist_directory=vectordb_directory, embedding_function=embeddings
+                persist_directory=user_vector_store_directory,
+                embedding_function=embeddings,
             )
         except Exception as e:
-            print(f"Couldn't load vectorstore from {vectordb_directory}. Error: {e}")
+            print(
+                f"Couldn't load vectorstore from {user_vector_store_directory}. Error: {e}"
+            )
             vector_store = None
     else:
         vector_store = None
