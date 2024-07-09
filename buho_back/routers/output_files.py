@@ -22,5 +22,7 @@ async def generate_output_file(body: OutputFileRequest, user_id: str = "user"):
     total_runtime = round(end_time - start_time, 2)
     print(f"Time to generate {filename}: {total_runtime} s")
     return FileResponse(
-        output_file_path, media_type="application/pdf", filename=f"{filename}.pdf"
+        output_file_path,
+        media_type="application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+        filename=f"{filename}.docx",
     )

@@ -1,6 +1,7 @@
 import os
 from concurrent.futures import ThreadPoolExecutor
 from markdown_pdf import MarkdownPdf, Section
+from pdf2docx import Converter
 from buho_back.services.storage import load_json, get_vector_store
 from buho_back.services.retriever import retrieve_chunks
 from buho_back.services.context import concatenate_chunks
@@ -70,9 +71,14 @@ def generate_file(filename, user_id):
     if not os.path.exists(user_output_files_directory):
         os.makedirs(user_output_files_directory)
 
-    file_path = os.path.join(user_output_files_directory, f"{filename}.pdf")
-    if os.path.exists(file_path):
-        os.remove(file_path)
-    pdf.save(file_path)
+    pdf_file_path = os.path.join(user_output_files_directory, f"{filename}.pdf")
+    if os.path.exists(pdf_file_path):
+        os.remove(pdf_file_path)
+    pdf.save(pdf_file_path)
 
-    return file_path
+    cv = Converter(pdf_file_path)
+    doc_file_path = pdf_file_path.replace(".pdf", ".docx")
+    cv.convert(doc_file_path)
+    cv.close()
+
+    return doc_file_path
