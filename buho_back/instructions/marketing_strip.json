@@ -1,6 +1,6 @@
 {
     "sections": {
-        "summary": "is a three-slide PowerPoint presentation comparing a few companies as investment opportunities. The presentation should have 3 slides: 'title (title slide)', 'comparative table (table slide)', 'conclusion (content slide)'"
+        "summary": "is a PowerPoint presentation comparing a few companies as investment opportunities. The presentation should have 3 slides: 'title (title slide)': a short title; 'comparative table (table slide)': a table comparing the companies with the following columns: company name, market cap, a 6-word description, HQ (what country they are based in), and P/E ratio (if not available in the context, search for it on https://www.google.com/finance/), 'conclusion (content slide)'"
     },
     "extension": ".pptx"
 }

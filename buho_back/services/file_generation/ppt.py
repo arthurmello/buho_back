@@ -44,9 +44,8 @@ def generate_presentation(content, user_output_files_directory, filename):
         # Define table properties
         rows = len(slide_data["table_data"])
         cols = len(slide_data["table_data"][0])
-        slide_width_inches
         left = Inches(1)
-        top = Inches(2)
+        top = Inches(1.8)
         width = Inches(slide_width_inches / 1.18)
         height = Inches(slide_height_inches / 1.56)
 
