@@ -165,5 +165,3 @@ _data/
 
 # Mac stuff
 .DS_Store
-*tests
-*test_dir

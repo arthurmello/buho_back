@@ -12,10 +12,15 @@ vectordb_directory = settings.VECTORDB_DIRECTORY
 summaries_directory = settings.SUMMARIES_DIRECTORY
 router = APIRouter()
 
+
 @router.get("/")
 async def get_output_file_names():
     instructions_directory = "./buho_back/instructions"
-    files = [f for f in os.listdir(instructions_directory) if os.path.isfile(os.path.join(instructions_directory, f))]
+    files = [
+        f
+        for f in os.listdir(instructions_directory)
+        if os.path.isfile(os.path.join(instructions_directory, f))
+    ]
     file_names = [f.split(".")[0] for f in files]
     return file_names
 

@@ -56,7 +56,7 @@ async def upload_files(files: List[UploadFile], user_id: str = "user"):
 
     chunks = []
     user_input_files_directory = os.path.join(input_files_directory, user_id)
-    reset_files(user_id)
+    await reset_files(user_id)
     if not os.path.exists(user_input_files_directory):
         os.makedirs(user_input_files_directory)
 
