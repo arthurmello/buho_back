@@ -7,11 +7,12 @@ from buho_back.services.context import concatenate_chunks
 from buho_back.services.file_generation.ppt import generate_presentation
 from buho_back.services.file_generation.doc import generate_doc
 from buho_back.config import settings
-from buho_back.utils import chat_model
+from buho_back.utils import ChatModel
 import ast
 
 summaries_directory = settings.SUMMARIES_DIRECTORY
 output_files_directory = settings.OUTPUT_FILES_DIRECTORY
+chat_model = ChatModel()
 
 
 def create_general_context_for_output_file(user_summaries_directory):
@@ -79,7 +80,7 @@ def generate_file(filename, user_id):
         final_prompt = write_final_prompt_for_section_generation(
             info_for_prompt[section_name]
         )
-        answer = chat_model.invoke(final_prompt).content
+        answer = chat_model.invoke(final_prompt)
         return answer
 
     with ThreadPoolExecutor(max_workers=8) as executor:

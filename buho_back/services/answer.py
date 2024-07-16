@@ -1,9 +1,10 @@
 from buho_back.services.context import create_general_context, concatenate_chunks
 from buho_back.services.retriever import retrieve_chunks
 from buho_back.config import settings
-from buho_back.utils import chat_model
+from buho_back.utils import ChatModel
 
 n_sources_to_display = settings.N_SOURCES_TO_DISPLAY
+chat_model = ChatModel()
 
 
 def format_question_with_full_context(general_context, chunk_context, question):
@@ -21,9 +22,8 @@ def get_answer_and_sources(vector_store, question, k=10):
         general_context, chunk_context, question
     )
 
-    answer = chat_model.invoke(question_with_full_context)
+    result = chat_model.invoke(question_with_full_context)
 
-    result = answer.content
     sources = [
         {
             "page_content": doc.page_content,

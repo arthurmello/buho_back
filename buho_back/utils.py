@@ -1,10 +1,13 @@
 import tiktoken
-from langchain_openai import ChatOpenAI, OpenAIEmbeddings
+from langchain_openai import OpenAIEmbeddings
+from openai import OpenAI
 from buho_back.config import settings
 
 openai_api_key = settings.OPENAI_API_KEY
 llm = settings.LLM
 embedding_model = settings.EMBEDDING_MODEL
+
+client = OpenAI(api_key=openai_api_key)
 
 
 def calculate_embedding_cost(texts):
@@ -16,4 +19,16 @@ def calculate_embedding_cost(texts):
 
 embeddings = OpenAIEmbeddings(model=embedding_model, openai_api_key=openai_api_key)
 
-chat_model = ChatOpenAI(model=llm, temperature=0)
+
+class ChatModel:
+    def __init__(self, model=llm, temperature=0):
+        self.model = model
+        self.temperature = temperature
+
+    def invoke(self, prompt):
+        response = client.chat.completions.create(
+            model=self.model,
+            messages=[{"role": "user", "content": prompt}],
+            temperature=self.temperature,
+        )
+        return response.choices[0].message.content

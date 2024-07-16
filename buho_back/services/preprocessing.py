@@ -17,13 +17,16 @@ from tenacity import (
     wait_random_exponential,
 )
 
-from buho_back.utils import chat_model, embeddings
+from buho_back.utils import ChatModel, embeddings
 from buho_back.config import settings
 from buho_back.services.storage import clear_directory
+
 
 embedding_model = settings.EMBEDDING_MODEL
 vectordb_directory = settings.VECTORDB_DIRECTORY
 summaries_directory = settings.SUMMARIES_DIRECTORY
+chat_model = ChatModel()
+
 extension_loaders = {
     ".pdf": PyPDFLoader,
     ".docx": Docx2txtLoader,
@@ -114,7 +117,7 @@ def aggregate_chunks(chunks, max_size):
 def summarize(text):
     prompt = f"summarize this in bullet points: {text}"
     answer = chat_model.invoke(prompt)
-    return answer.content
+    return answer
 
 
 def summarize_and_aggregate_chunks(chunks, max_size=400000):
