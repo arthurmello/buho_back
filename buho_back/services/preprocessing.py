@@ -52,7 +52,7 @@ def load_document(file):
 
 
 # splitting data in chunks
-def create_chunks(data, chunk_size=1024, chunk_overlap=100):
+def create_chunks(data, chunk_size=512, chunk_overlap=100):
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size, chunk_overlap=chunk_overlap
     )
@@ -117,18 +117,20 @@ def summarize(text):
     return answer.content
 
 
-def summarize_and_aggregate_chunks(chunks, max_size=30000):
-    chunks = aggregate_chunks(chunks, max_size=max_size)
+def summarize_and_aggregate_chunks(chunks, max_size=400000):
+    aggregated_chunks = aggregate_chunks(chunks, max_size=max_size)
     api_limit_tokens_per_minute = 30000
-    number_of_chunks = len(chunks)
+    number_of_chunks = len(aggregated_chunks)
     max_workers = int(number_of_chunks * max_size / api_limit_tokens_per_minute)
     print(f"{number_of_chunks=}")
     print(f"{max_workers=}")
-    while len(chunks) > 1 or (len(chunks) == 1 and len(chunks[0]) > max_size):
+    while len(aggregated_chunks) > 1 or (
+        len(aggregated_chunks) == 1 and len(aggregated_chunks[0]) > max_size
+    ):
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-            summarized_chunks = list(executor.map(summarize, chunks))
-        chunks = aggregate_chunks(summarized_chunks, max_size=max_size)
-    return chunks[0]
+            summarized_chunks = list(executor.map(summarize, aggregated_chunks))
+        aggregated_chunks = aggregate_chunks(summarized_chunks, max_size=max_size)
+    return aggregated_chunks[0]
 
 
 def create_summaries(chunks, user_id):

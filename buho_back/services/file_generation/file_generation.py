@@ -30,6 +30,7 @@ def write_final_prompt_for_section_generation(info_for_prompt):
             Here's some additional info: {info_for_prompt["chunk_context"]}
             More specifically, write a {info_for_prompt["section_name"]} for this {info_for_prompt["filename"]}.
             A {info_for_prompt["section_name"]} {info_for_prompt["description"]}.
+            No need to include a conclusion unless specifically requested.
         """
 
     if info_for_prompt["extension"] == ".pptx":
