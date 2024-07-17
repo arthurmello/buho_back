@@ -56,7 +56,7 @@ async def upload_files(files: List[UploadFile], user_id: str = "user"):
 
     chunks = []
     user_input_files_directory = os.path.join(input_files_directory, user_id)
-    reset_files(user_id)
+    await reset_files(user_id)
     if not os.path.exists(user_input_files_directory):
         os.makedirs(user_input_files_directory)
 
@@ -74,8 +74,9 @@ async def upload_files(files: List[UploadFile], user_id: str = "user"):
             print(
                 f'File "{file.filename}" extension is not supported. Supported extensions: {allowed_extensions}'
             )
-
-    tokens, embedding_cost = calculate_embedding_cost(chunks)
+    tokens, embedding_cost = calculate_embedding_cost(
+        [chunk.page_content for chunk in chunks]
+    )
 
     print(f"Total Tokens: {tokens}")
     print(f"Embedding Cost in USD: {embedding_cost:.6f}")

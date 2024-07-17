@@ -20,5 +20,7 @@ def create_general_context(directory=summaries_directory):
 
 
 def concatenate_chunks(chunks):
-    chunk_context = "\n".join([doc.page_content for doc in chunks])
+
+    documents = [chunk["document"] for chunk in chunks]
+    chunk_context = "\n".join(documents)
     return chunk_context

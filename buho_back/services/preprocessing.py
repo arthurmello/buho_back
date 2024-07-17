@@ -1,5 +1,6 @@
 import os
 import concurrent.futures
+import uuid
 
 from langchain_community.document_loaders import (
     PyPDFLoader,
@@ -8,7 +9,6 @@ from langchain_community.document_loaders import (
     UnstructuredExcelLoader,
     UnstructuredPowerPointLoader,
 )
-from langchain_community.vectorstores import Chroma
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 from tenacity import (
@@ -17,13 +17,16 @@ from tenacity import (
     wait_random_exponential,
 )
 
-from buho_back.utils import chat_model, embeddings
+from buho_back.utils import ChatModel, ChromaClient
 from buho_back.config import settings
 from buho_back.services.storage import clear_directory
+
 
 embedding_model = settings.EMBEDDING_MODEL
 vectordb_directory = settings.VECTORDB_DIRECTORY
 summaries_directory = settings.SUMMARIES_DIRECTORY
+chat_model = ChatModel()
+
 extension_loaders = {
     ".pdf": PyPDFLoader,
     ".docx": Docx2txtLoader,
@@ -36,6 +39,8 @@ extension_loaders = {
 
 
 # loading PDF, DOCX and TXT files as LangChain Documents
+
+
 def load_document(file):
     name, extension = os.path.splitext(file)
     try:
@@ -52,7 +57,7 @@ def load_document(file):
 
 
 # splitting data in chunks
-def create_chunks(data, chunk_size=1024, chunk_overlap=100):
+def create_chunks(data, chunk_size=512, chunk_overlap=100):
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size, chunk_overlap=chunk_overlap
     )
@@ -69,9 +74,12 @@ def create_vector_store(chunks, user_id):
     clear_directory(user_vectordb_directory)
     clear_directory(user_summaries_directory)
 
-    vector_store = Chroma.from_documents(
-        chunks, embeddings, persist_directory=user_vectordb_directory
-    )
+    chroma_client = ChromaClient(user_vectordb_directory)
+    vector_store = chroma_client.get_or_create_collection()
+    documents = [chunk.page_content for chunk in chunks]
+    metadatas = [chunk.metadata for chunk in chunks]
+    ids = [f"{uuid.uuid4()}" for _ in range(len(chunks))]
+    vector_store.add(ids=ids, documents=documents, metadatas=metadatas)
     print(f"Embeddings created on {user_vectordb_directory}.")
     return vector_store
 
@@ -114,21 +122,23 @@ def aggregate_chunks(chunks, max_size):
 def summarize(text):
     prompt = f"summarize this in bullet points: {text}"
     answer = chat_model.invoke(prompt)
-    return answer.content
+    return answer
 
 
-def summarize_and_aggregate_chunks(chunks, max_size=30000):
-    chunks = aggregate_chunks(chunks, max_size=max_size)
+def summarize_and_aggregate_chunks(chunks, max_size=400000):
+    aggregated_chunks = aggregate_chunks(chunks, max_size=max_size)
     api_limit_tokens_per_minute = 30000
-    number_of_chunks = len(chunks)
+    number_of_chunks = len(aggregated_chunks)
     max_workers = int(number_of_chunks * max_size / api_limit_tokens_per_minute)
     print(f"{number_of_chunks=}")
     print(f"{max_workers=}")
-    while len(chunks) > 1 or (len(chunks) == 1 and len(chunks[0]) > max_size):
+    while len(aggregated_chunks) > 1 or (
+        len(aggregated_chunks) == 1 and len(aggregated_chunks[0]) > max_size
+    ):
         with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-            summarized_chunks = list(executor.map(summarize, chunks))
-        chunks = aggregate_chunks(summarized_chunks, max_size=max_size)
-    return chunks[0]
+            summarized_chunks = list(executor.map(summarize, aggregated_chunks))
+        aggregated_chunks = aggregate_chunks(summarized_chunks, max_size=max_size)
+    return aggregated_chunks[0]
 
 
 def create_summaries(chunks, user_id):

@@ -10,7 +10,9 @@ class Settings(BaseSettings):
     OPENAI_API_KEY: str = os.environ["OPENAI_API_KEY"]
 
     # Hard-coded settings
-    DATA_DIRECTORY: str = "./buho_back/_data"
+    DATA_DIRECTORY: str = os.path.join(".", "buho_back", "_data")
+    TEMPLATES_DIRECTORY: str = os.path.join(".", "buho_back", "templates")
+    INSTRUCTIONS_DIRECTORY: str = os.path.join(".", "buho_back", "instructions")
     EMBEDDING_MODEL: str = "text-embedding-3-small"
     LLM: str = "gpt-4o"
     N_SOURCES_TO_DISPLAY: int = 3
