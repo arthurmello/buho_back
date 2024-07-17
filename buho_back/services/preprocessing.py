@@ -1,6 +1,7 @@
 import os
 import concurrent.futures
 import uuid
+import tiktoken
 
 from langchain_community.document_loaders import (
     PyPDFLoader,
@@ -17,9 +18,10 @@ from tenacity import (
     wait_random_exponential,
 )
 
-from buho_back.utils import ChatModel, ChromaClient
+from buho_back.services.storage.vectordb import VectorDbClient
+from buho_back.services.storage.file_management import clear_directory
+from buho_back.utils import ChatModel
 from buho_back.config import settings
-from buho_back.services.storage import clear_directory
 
 
 embedding_model = settings.EMBEDDING_MODEL
@@ -38,10 +40,15 @@ extension_loaders = {
 }
 
 
-# loading PDF, DOCX and TXT files as LangChain Documents
+def calculate_embedding_cost(texts):
+    enc = tiktoken.encoding_for_model(embedding_model)
+    total_tokens = sum([len(enc.encode(page)) for page in texts])
+    # check prices here: https://openai.com/pricing
+    return total_tokens, total_tokens / 1000 * 0.00013
+    return 0, 0
 
 
-def load_document(file):
+def load_file(file):
     name, extension = os.path.splitext(file)
     try:
         loader = extension_loaders[extension](file)
@@ -66,7 +73,7 @@ def create_chunks(data, chunk_size=512, chunk_overlap=100):
 
 
 # create embeddings and save them in a vector store
-def create_vector_store(chunks, user_id):
+def create_vectordb(chunks, user_id):
     user_vectordb_directory = os.path.join(vectordb_directory, user_id)
     user_summaries_directory = os.path.join(summaries_directory, user_id)
 
@@ -74,14 +81,14 @@ def create_vector_store(chunks, user_id):
     clear_directory(user_vectordb_directory)
     clear_directory(user_summaries_directory)
 
-    chroma_client = ChromaClient(user_vectordb_directory)
-    vector_store = chroma_client.get_or_create_collection()
+    vectordb_client = VectorDbClient(user_vectordb_directory)
+    vectordb = vectordb_client.get_or_create_collection()
     documents = [chunk.page_content for chunk in chunks]
     metadatas = [chunk.metadata for chunk in chunks]
     ids = [f"{uuid.uuid4()}" for _ in range(len(chunks))]
-    vector_store.add(ids=ids, documents=documents, metadatas=metadatas)
+    vectordb.add(ids=ids, documents=documents, metadatas=metadatas)
     print(f"Embeddings created on {user_vectordb_directory}.")
-    return vector_store
+    return vectordb
 
 
 def get_unique_files_from_chunks(chunks):

@@ -3,7 +3,8 @@ import os
 
 from buho_back.models import AskQuestionRequest
 from buho_back.config import settings
-from buho_back.services.storage import dump_json, load_json, get_vector_store
+from buho_back.services.storage.file_management import dump_json, load_json
+from buho_back.services.storage.vectordb import get_vectordb
 from buho_back.services.answer import get_answer_and_sources
 
 router = APIRouter()
@@ -40,10 +41,10 @@ async def ask_question(body: AskQuestionRequest, user_id: str = "user"):
     user_chat_history_file = get_user_chat_history_file(user_id)
     chat_history = load_json(user_chat_history_file)
 
-    vector_store = get_vector_store(user_id)
+    vectordb = get_vectordb(user_id)
 
-    if vector_store:
-        answer, sources = get_answer_and_sources(vector_store, body.question)
+    if vectordb:
+        answer, sources = get_answer_and_sources(vectordb, body.question)
         chat_history.append(
             {
                 "question": body.question,

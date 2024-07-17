@@ -2,7 +2,7 @@ from fastapi import APIRouter
 import os
 from buho_back.models import AskQuestionRequest
 from buho_back.config import settings
-from buho_back.services.storage import dump_json, load_json
+from buho_back.services.storage.file_management import dump_json, load_json
 
 qa_tracker_directory = settings.QA_TRACKER_DIRECTORY
 data_directory = settings.DATA_DIRECTORY

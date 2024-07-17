@@ -1,14 +1,13 @@
 import os
 from concurrent.futures import ThreadPoolExecutor
+import ast
 
-from buho_back.services.storage import load_json, get_vector_store
-from buho_back.services.retriever import retrieve_chunks
-from buho_back.services.context import concatenate_chunks
+from buho_back.services.storage.file_management import load_json
+from buho_back.services.storage.vectordb import get_vectordb, retrieve_chunks
 from buho_back.services.file_generation.ppt import generate_presentation
 from buho_back.services.file_generation.doc import generate_doc
+from buho_back.utils import ChatModel, concatenate_chunks
 from buho_back.config import settings
-from buho_back.utils import ChatModel
-import ast
 
 summaries_directory = settings.SUMMARIES_DIRECTORY
 output_files_directory = settings.OUTPUT_FILES_DIRECTORY
@@ -57,7 +56,7 @@ def write_final_prompt_for_section_generation(info_for_prompt):
 def generate_file(filename, user_id):
     user_summaries_directory = os.path.join(summaries_directory, user_id)
     user_output_files_directory = os.path.join(output_files_directory, user_id)
-    user_vector_store = get_vector_store(user_id)
+    user_vectordb = get_vectordb(user_id)
     instructions = load_json(f"buho_back/instructions/{filename}.json")
     sections = instructions["sections"]
     extension = instructions["extension"]
@@ -72,7 +71,7 @@ def generate_file(filename, user_id):
 
         description = sections.get(section_name)
         info_for_prompt[section_name]["description"] = description
-        chunks = retrieve_chunks(user_vector_store, description)
+        chunks = retrieve_chunks(user_vectordb, description)
         info_for_prompt[section_name]["chunk_context"] = concatenate_chunks(chunks)
         info_for_prompt[section_name]["extension"] = extension
 

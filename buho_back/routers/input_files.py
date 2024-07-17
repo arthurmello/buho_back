@@ -3,12 +3,13 @@ from typing import List
 import time
 import os
 from buho_back.config import settings
-from buho_back.services.storage import clear_directory, get_vector_store
-from buho_back.utils import calculate_embedding_cost
+from buho_back.services.storage.file_management import clear_directory
+from buho_back.services.storage.vectordb import get_vectordb
 from buho_back.services.preprocessing import (
+    calculate_embedding_cost,
     create_chunks,
-    create_vector_store,
-    load_document,
+    create_vectordb,
+    load_file,
     create_summaries,
     extension_loaders,
 )
@@ -23,13 +24,11 @@ router = APIRouter()
 
 @router.get("/")
 async def get_files(user_id: str = "user"):
-    vector_store = get_vector_store(user_id)
-    if vector_store:
+    vectordb = get_vectordb(user_id)
+    if vectordb:
         files_list = [
             name.split("/")[-1]
-            for name in set(
-                [meta["source"] for meta in vector_store.get()["metadatas"]]
-            )
+            for name in set([meta["source"] for meta in vectordb.get()["metadatas"]])
         ]
         files = [{"name": file} for file in files_list]
     else:
@@ -66,7 +65,7 @@ async def upload_files(files: List[UploadFile], user_id: str = "user"):
             filename = os.path.join(user_input_files_directory, file.filename)
             with open(filename, "wb") as f:
                 f.write(bytes_data)
-            data = load_document(filename)
+            data = load_file(filename)
             chunks.extend(create_chunks(data))
             print(f"{filename=}")
             print(f'Chunks for "{file.filename}" created.')
@@ -81,7 +80,7 @@ async def upload_files(files: List[UploadFile], user_id: str = "user"):
     print(f"Total Tokens: {tokens}")
     print(f"Embedding Cost in USD: {embedding_cost:.6f}")
 
-    create_vector_store(chunks, user_id)
+    create_vectordb(chunks, user_id)
     create_summaries(chunks, user_id)
     clear_directory(user_input_files_directory)
 
