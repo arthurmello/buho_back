@@ -1,10 +1,27 @@
-from buho_back.services.context import create_general_context, concatenate_chunks
-from buho_back.services.retriever import retrieve_chunks
-from buho_back.config import settings
-from buho_back.utils import ChatModel
+import os
 
+from buho_back.config import settings
+from buho_back.utils import ChatModel, concatenate_chunks
+from buho_back.services.storage.vectordb import retrieve_chunks
+
+summaries_directory = settings.SUMMARIES_DIRECTORY
 n_sources_to_display = settings.N_SOURCES_TO_DISPLAY
 chat_model = ChatModel()
+
+
+def create_general_context(directory=summaries_directory):
+    context = """You are an investment banking associate, working on a specific financial deal.
+        You'll be given some file summaries, as well as some other relevant information.
+        Your goal is to answer questions related to the financial deal,
+        based on the files and on the other information provided.
+        Do not mention the summaries of the files, just the files themselves.
+        Here's a summary of all the files made available to you: /n"""
+    for filename in os.listdir(directory):
+        if os.path.isfile(os.path.join(directory, filename)):
+            with open(os.path.join(directory, filename), "r") as file:
+                summary_content = file.read()
+            context += f'"{filename}":\n"{summary_content}"\n\n'
+    return context
 
 
 def format_question_with_full_context(general_context, chunk_context, question):
@@ -14,9 +31,9 @@ def format_question_with_full_context(general_context, chunk_context, question):
     return question_with_full_context
 
 
-def get_answer_and_sources(vector_store, question):
+def get_answer_and_sources(vectordb, question):
     general_context = create_general_context()
-    source_chunks = retrieve_chunks(vector_store, question)
+    source_chunks = retrieve_chunks(vectordb, question)
     chunk_context = concatenate_chunks(source_chunks)
     question_with_full_context = format_question_with_full_context(
         general_context, chunk_context, question

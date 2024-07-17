@@ -2,7 +2,6 @@ import json
 import pytest
 from fastapi.testclient import TestClient
 from buho_back.main import app
-from buho_back.models import OutputFileRequest
 import os
 import time
 

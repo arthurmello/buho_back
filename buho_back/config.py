@@ -19,7 +19,7 @@ class Settings(BaseSettings):
 
     @property
     def VECTORDB_DIRECTORY(self):
-        return f"{self.DATA_DIRECTORY}/vector_db"
+        return f"{self.DATA_DIRECTORY}/vectordb"
 
     @property
     def SUMMARIES_DIRECTORY(self):
