@@ -1,10 +1,9 @@
 import os
 import shutil
-from langchain_community.vectorstores import Chroma
 import json
 from pathlib import Path
 from buho_back.config import settings
-from buho_back.utils import embeddings
+from buho_back.utils import ChromaClient
 
 vectordb_directory = settings.VECTORDB_DIRECTORY
 
@@ -36,10 +35,8 @@ def get_vector_store(user_id):
     user_vector_store_directory = os.path.join(vectordb_directory, user_id)
     if os.path.exists(user_vector_store_directory):
         try:
-            vector_store = Chroma(
-                persist_directory=user_vector_store_directory,
-                embedding_function=embeddings,
-            )
+            chroma_client = ChromaClient(user_vector_store_directory)
+            vector_store = chroma_client.get_collection()
         except Exception as e:
             print(
                 f"Couldn't load vectorstore from {user_vector_store_directory}. Error: {e}"

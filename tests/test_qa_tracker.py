@@ -33,9 +33,7 @@ def test_reset_and_get_qa_tracker():
     )
     assert response_from_add.status_code == 200
 
-    response_from_reset = client.get(
-        f"/qa_tracker/reset?user_id={user}"
-    )
+    response_from_reset = client.get(f"/qa_tracker/reset?user_id={user}")
     assert response_from_reset.status_code == 200
 
     response_from_get = client.get(f"/qa_tracker/?user_id={user}")

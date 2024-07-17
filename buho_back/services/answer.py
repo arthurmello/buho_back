@@ -14,7 +14,7 @@ def format_question_with_full_context(general_context, chunk_context, question):
     return question_with_full_context
 
 
-def get_answer_and_sources(vector_store, question, k=10):
+def get_answer_and_sources(vector_store, question):
     general_context = create_general_context()
     source_chunks = retrieve_chunks(vector_store, question)
     chunk_context = concatenate_chunks(source_chunks)
@@ -26,9 +26,9 @@ def get_answer_and_sources(vector_store, question, k=10):
 
     sources = [
         {
-            "page_content": doc.page_content,
-            "file": doc.metadata.get("source").split("/")[-1],
-            "page": doc.metadata.get("page", "-"),
+            "page_content": doc["document"],
+            "file": doc["metadata"].get("source").split("/")[-1],
+            "page": doc["metadata"].get("page", "-"),
         }
         for doc in source_chunks
     ][:n_sources_to_display]

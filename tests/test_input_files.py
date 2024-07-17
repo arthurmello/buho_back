@@ -6,7 +6,7 @@ import os
 
 current_dir = os.path.dirname(os.path.abspath(__file__))
 client = TestClient(app)
-user = "test_user"
+user = "temp_user"
 
 
 @pytest.fixture(autouse=True)

@@ -8,3 +8,9 @@ class AskQuestionRequest(BaseModel):
 
 class OutputFileRequest(BaseModel):
     filename: str
+
+
+class Document(BaseModel):
+    id: str
+    page_content: str
+    metadata: dict

@@ -1,5 +1,6 @@
 import os
 import concurrent.futures
+import uuid
 
 from langchain_community.document_loaders import (
     PyPDFLoader,
@@ -8,7 +9,6 @@ from langchain_community.document_loaders import (
     UnstructuredExcelLoader,
     UnstructuredPowerPointLoader,
 )
-from langchain_community.vectorstores import Chroma
 from langchain.text_splitter import RecursiveCharacterTextSplitter
 
 from tenacity import (
@@ -17,7 +17,7 @@ from tenacity import (
     wait_random_exponential,
 )
 
-from buho_back.utils import ChatModel, embeddings
+from buho_back.utils import ChatModel, ChromaClient
 from buho_back.config import settings
 from buho_back.services.storage import clear_directory
 
@@ -39,6 +39,8 @@ extension_loaders = {
 
 
 # loading PDF, DOCX and TXT files as LangChain Documents
+
+
 def load_document(file):
     name, extension = os.path.splitext(file)
     try:
@@ -72,9 +74,12 @@ def create_vector_store(chunks, user_id):
     clear_directory(user_vectordb_directory)
     clear_directory(user_summaries_directory)
 
-    vector_store = Chroma.from_documents(
-        chunks, embeddings, persist_directory=user_vectordb_directory
-    )
+    chroma_client = ChromaClient(user_vectordb_directory)
+    vector_store = chroma_client.get_or_create_collection()
+    documents = [chunk.page_content for chunk in chunks]
+    metadatas = [chunk.metadata for chunk in chunks]
+    ids = [f"{uuid.uuid4()}" for _ in range(len(chunks))]
+    vector_store.add(ids=ids, documents=documents, metadatas=metadatas)
     print(f"Embeddings created on {user_vectordb_directory}.")
     return vector_store
 
