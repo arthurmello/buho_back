@@ -22,20 +22,29 @@ class VectorDbClient:
         self.collection_name = "collection"
         self.client.clear_system_cache()
 
-    def create_collection(self):
-        return self.client.create_collection(
-            name=self.collection_name, embedding_function=self.embedding_function
-        )
-
-    def get_collection(self):
-        return self.client.get_collection(
-            name=self.collection_name, embedding_function=self.embedding_function
-        )
-
     def get_or_create_collection(self):
-        return self.client.get_or_create_collection(
+        collection = self.client.get_or_create_collection(
             name=self.collection_name, embedding_function=self.embedding_function
         )
+
+        def retrieve_chunks(text, k=10, score_threshold=-0.1):
+            query_results = collection.query(
+                query_texts=text,
+                n_results=k,
+            )
+            formatted_query_results = query_result_to_dict_list(query_results)
+            if score_threshold:
+                filtered_formatted_query_results = [
+                    result
+                    for result in formatted_query_results
+                    if result["distance"] > score_threshold
+                ]
+                return filtered_formatted_query_results
+            else:
+                return formatted_query_results
+
+        collection.retrieve_chunks = retrieve_chunks
+        return collection
 
 
 def get_vectordb(user_id):
@@ -43,7 +52,7 @@ def get_vectordb(user_id):
     if os.path.exists(user_vectordb_directory):
         try:
             vectordb_client = VectorDbClient(user_vectordb_directory)
-            vectordb = vectordb_client.get_collection()
+            vectordb = vectordb_client.get_or_create_collection()
         except Exception as e:
             print(
                 f"Couldn't load vectorstore from {user_vectordb_directory}. Error: {e}"
@@ -79,20 +88,3 @@ def query_result_to_dict_list(
         }
         result_list.append(result_dict)
     return result_list
-
-
-def retrieve_chunks(collection, text, k=10, score_threshold=-0.1):
-    query_results = collection.query(
-        query_texts=text,
-        n_results=k,
-    )
-    formatted_query_results = query_result_to_dict_list(query_results)
-    if score_threshold:
-        filtered_formatted_query_results = [
-            result
-            for result in formatted_query_results
-            if result["distance"] > score_threshold
-        ]
-        return filtered_formatted_query_results
-    else:
-        return formatted_query_results

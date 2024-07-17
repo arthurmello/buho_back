@@ -3,7 +3,7 @@ from concurrent.futures import ThreadPoolExecutor
 import ast
 
 from buho_back.services.storage.file_management import load_json
-from buho_back.services.storage.vectordb import get_vectordb, retrieve_chunks
+from buho_back.services.storage.vectordb import get_vectordb
 from buho_back.services.file_generation.ppt import generate_presentation
 from buho_back.services.file_generation.doc import generate_doc
 from buho_back.utils import ChatModel, concatenate_chunks
@@ -71,7 +71,7 @@ def generate_file(filename, user_id):
 
         description = sections.get(section_name)
         info_for_prompt[section_name]["description"] = description
-        chunks = retrieve_chunks(user_vectordb, description)
+        chunks = user_vectordb.retrieve_chunks(text=description)
         info_for_prompt[section_name]["chunk_context"] = concatenate_chunks(chunks)
         info_for_prompt[section_name]["extension"] = extension
 
