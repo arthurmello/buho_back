@@ -137,8 +137,10 @@ def summarize_and_aggregate_chunks(chunks, max_size=400000):
     api_limit_tokens_per_minute = 30000
     number_of_chunks = len(aggregated_chunks)
     max_workers = int(number_of_chunks * max_size / api_limit_tokens_per_minute)
+    available_cpus = os.cpu_count()
     print(f"{number_of_chunks=}")
     print(f"{max_workers=}")
+    print(f"{available_cpus=}")
     while len(aggregated_chunks) > 1 or (
         len(aggregated_chunks) == 1 and len(aggregated_chunks[0]) > max_size
     ):

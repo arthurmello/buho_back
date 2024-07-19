@@ -31,6 +31,7 @@ def write_final_prompt_for_section_generation(info_for_prompt):
             More specifically, write a {info_for_prompt["section_name"]} for this {info_for_prompt["filename"]}.
             A {info_for_prompt["section_name"]} {info_for_prompt["description"]}.
             No need to include a conclusion unless specifically requested.
+            No need to number sections either
         """
 
     if info_for_prompt["extension"] == ".pptx":
@@ -50,6 +51,11 @@ def write_final_prompt_for_section_generation(info_for_prompt):
             the actual content of the presentation is up to you.
             you are free to choose which types slides to use for each part of the presentation.
             Answer just with that structured list, nothing else."""
+    if info_for_prompt["extension"] == ".docx":
+        prompt += """
+            Your output can use simple markdown markers, such as "#" for the section header, and "##" for subsection headers.
+            Do not include page breaks.
+            """
     return prompt
 
 
