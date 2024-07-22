@@ -11,6 +11,7 @@ from buho_back.config import settings
 
 summaries_directory = settings.SUMMARIES_DIRECTORY
 output_files_directory = settings.OUTPUT_FILES_DIRECTORY
+instructions_directory = settings.INSTRUCTIONS_DIRECTORY
 chat_model = ChatModel()
 
 
@@ -63,7 +64,7 @@ def generate_file(filename, user_id):
     user_summaries_directory = os.path.join(summaries_directory, user_id)
     user_output_files_directory = os.path.join(output_files_directory, user_id)
     user_vectordb = get_vectordb(user_id)
-    instructions = load_json(f"buho_back/instructions/{filename}.json")
+    instructions = load_json(os.path.join(instructions_directory, f"{filename}.json"))
     sections = instructions["sections"]
     extension = instructions["extension"]
     info_for_prompt = {}

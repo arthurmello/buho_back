@@ -10,12 +10,12 @@ data_directory = settings.DATA_DIRECTORY
 input_files_directory = settings.INPUT_FILES_DIRECTORY
 vectordb_directory = settings.VECTORDB_DIRECTORY
 summaries_directory = settings.SUMMARIES_DIRECTORY
+instructions_directory = settings.INSTRUCTIONS_DIRECTORY
 router = APIRouter()
 
 
 @router.get("/")
 async def get_output_file_names():
-    instructions_directory = "./buho_back/instructions"
     files = [
         f
         for f in os.listdir(instructions_directory)
