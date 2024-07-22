@@ -45,7 +45,6 @@ def calculate_embedding_cost(texts):
     total_tokens = sum([len(enc.encode(page)) for page in texts])
     # check prices here: https://openai.com/pricing
     return total_tokens, total_tokens / 1000 * 0.00013
-    return 0, 0
 
 
 def load_file(file):
