@@ -1,10 +1,12 @@
 from fastapi import APIRouter
 from fastapi.responses import FileResponse
+from typing import Optional
 from buho_back.config import settings
 from buho_back.models import OutputFileRequest
 from buho_back.services.file_generation.file_generation import generate_file
 import time
 import os
+import json
 
 data_directory = settings.DATA_DIRECTORY
 input_files_directory = settings.INPUT_FILES_DIRECTORY
@@ -25,11 +27,25 @@ async def get_output_file_names():
     return file_names
 
 
+@router.get("/user_parameters")
+async def get_output_file_user_parameters(filename):
+    file_path = os.path.join(instructions_directory, f"{filename}.json")
+    if os.path.isfile(file_path):
+        with open(file_path, "r") as file:
+            data = json.load(file)
+    else:
+        data = {}
+    return data.get("user_parameters", [])
+
+
 @router.post("/generate")
-async def generate_output_file(body: OutputFileRequest, user_id: str = "user"):
+async def generate_output_file(
+    body: OutputFileRequest, user_id: str = "user", user_parameters: dict | None = None
+):
+    print(user_parameters)
     start_time = time.time()
     filename = body.filename
-    output_file_path = generate_file(filename, user_id)
+    output_file_path = generate_file(filename, user_id, user_parameters)
 
     end_time = time.time()
     total_runtime = round(end_time - start_time, 2)
@@ -44,6 +60,8 @@ async def generate_output_file(body: OutputFileRequest, user_id: str = "user"):
         media_type = (
             "application/vnd.openxmlformats-officedocument.presentationml.presentation"
         )
+    elif extension == "xlsx":
+        media_type = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
     else:
         media_type = None
     return FileResponse(

@@ -1,0 +1,16 @@
+{
+    "user_parameters": [
+        "EBITDA growth rate",
+        "Tax rate",
+        "D&A (%EBITDA)",
+        "NWC (%EBITDA)",
+        "Capital expenditures (%EBITDA)",
+        "Discount rate (r)",
+        "EBITDA multiple"
+    ],
+    "pre_prompt": "discounted_cash_flow.txt",
+    "hard_parameters": [
+        "Units"
+    ],
+    "extension": ".xlsx"
+}
