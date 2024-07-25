@@ -39,14 +39,12 @@ async def get_output_file_user_parameters(filename):
 
 
 @router.post("/generate")
-async def generate_output_file(
-    body: OutputFileRequest, user_id: str = "user", user_parameters: dict | None = None
-):
-    print(user_parameters)
+async def generate_output_file(body: OutputFileRequest, user_id: str = "user"):
+
     start_time = time.time()
     filename = body.filename
+    user_parameters = body.user_parameters
     output_file_path = generate_file(filename, user_id, user_parameters)
-
     end_time = time.time()
     total_runtime = round(end_time - start_time, 2)
     print(f"Time to generate {filename}: {total_runtime} s")
