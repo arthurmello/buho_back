@@ -18,7 +18,7 @@ COPY . /app
 RUN pip install poetry
 
 # Configure Poetry to not create a virtual environment
-RUN poetry config virtualenvs.create false
+RUN poetry config virtualenvs.in-project true
 
 # Install project dependencies using Poetry
 RUN poetry install
