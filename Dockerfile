@@ -13,6 +13,8 @@ COPY . /app
 # Install Poetry
 RUN pip install poetry
 
+RUN poetry config virtualenvs.create false
+
 # Install project dependencies using Poetry
 RUN poetry install
 
