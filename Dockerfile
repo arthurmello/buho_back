@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.9-slim
+FROM python:3.12
 RUN apt-get update && apt-get install -y \
 python3-dev \
 build-essential    
@@ -15,7 +15,6 @@ RUN pip install poetry
 
 # Install project dependencies using Poetry
 RUN poetry install
-RUN poetry shell
 
 # Install libreoffice to use PPT loader
 RUN apt-get --no-install-recommends install libreoffice -y
