@@ -15,6 +15,7 @@ RUN pip install poetry
 
 # Install project dependencies using Poetry
 RUN poetry install
+RUN poetry shell
 
 # Install libreoffice to use PPT loader
 RUN apt-get --no-install-recommends install libreoffice -y
