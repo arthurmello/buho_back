@@ -23,7 +23,7 @@ async def get_output_file_names():
         for f in os.listdir(instructions_directory)
         if os.path.isfile(os.path.join(instructions_directory, f))
     ]
-    file_names = [f.split(".")[0] for f in files]
+    file_names = set([f.split(".")[0] for f in files])
     return file_names
 
 

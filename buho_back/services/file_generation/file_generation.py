@@ -61,9 +61,11 @@ def write_final_prompt_for_section_generation(info_for_prompt):
             """
     return prompt
 
-def generate_sections(instructions, user_summaries_directory):
+
+def generate_sections(instructions, filename, user_vectordb, user_summaries_directory):
     sections = instructions["sections"]
-    
+    extension = instructions["extension"]
+
     info_for_prompt = {}
     for section_name in sections.keys():
         info_for_prompt[section_name] = {}
@@ -90,29 +92,25 @@ def generate_sections(instructions, user_summaries_directory):
         section_contents = list(
             executor.map(generate_section_content, info_for_prompt.keys())
         )
-    
+
     return section_contents
+
 
 def extract_structured_data(instructions, user_summaries_directory):
     pre_prompt_path = os.path.join(instructions_directory, instructions["pre_prompt"])
     if os.path.isfile(pre_prompt_path):
         with open(pre_prompt_path, "r") as file:
             pre_prompt = file.read()
-    
 
     context = create_general_context_for_output_file(user_summaries_directory)
-    prompt = pre_prompt + "\n\n"+ context
+    prompt = pre_prompt + "\n\n" + context
     answer = chat_model.invoke(prompt)
-    pattern = r'\{[^}]*\}'
-    print(answer)
-    print(re.findall(pattern, answer))
-    print(type(re.findall(pattern, answer)))
+    pattern = r"\{[^}]*\}"
     clean_answer = re.findall(pattern, answer)[0]
-    
-    # structured_data = answer
     structured_data = ast.literal_eval(clean_answer)
-    
+
     return structured_data
+
 
 def generate_file(filename, user_id, user_parameters):
     user_summaries_directory = os.path.join(summaries_directory, user_id)
@@ -122,20 +120,26 @@ def generate_file(filename, user_id, user_parameters):
     extension = instructions["extension"]
 
     if extension == ".docx":
-        section_contents = generate_sections(instructions, user_summaries_directory)
+        section_contents = generate_sections(
+            instructions, filename, user_vectordb, user_summaries_directory
+        )
         output_file_path = generate_doc(
             section_contents, user_output_files_directory, filename
         )
 
     elif extension == ".pptx":
-        section_contents = generate_sections(instructions, user_summaries_directory)
+        section_contents = generate_sections(
+            instructions, filename, user_vectordb, user_summaries_directory
+        )
         content = ast.literal_eval(section_contents[0])
         output_file_path = generate_presentation(
             content, user_output_files_directory, filename
         )
-    
+
     elif extension == ".xlsx":
-        structured_data = extract_structured_data(instructions, user_summaries_directory)
+        structured_data = extract_structured_data(
+            instructions, user_summaries_directory
+        )
         output_file_path = generate_xlsx(
             structured_data, user_output_files_directory, filename, user_parameters
         )
