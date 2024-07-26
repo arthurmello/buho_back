@@ -1,4 +1,5 @@
 from buho_back.config import settings
+from buho_back.utils import safe_cast
 import os
 from datetime import datetime
 import openpyxl
@@ -39,6 +40,8 @@ def generate_dcf(input_variables, template_path, user_output_files_directory, fi
             cell_value.value = input_variables[cell_key.value]
     
     # Define the new file path
+    if not os.path.exists(user_output_files_directory):
+        os.makedirs(user_output_files_directory)
     new_file_path = os.path.join(f"{user_output_files_directory}", f"{filename}.xlsx")
     
     # Save the modified workbook to the new path
@@ -50,5 +53,6 @@ def generate_xlsx(content, user_output_files_directory, filename, user_parameter
     template_path = os.path.join(templates_directory, f"{filename}.xlsx")
     ## get template, fill variables with content, and save as new output file
     if filename == "discounted_cash_flow":
+        user_parameters = {key: safe_cast(value) for key, value in user_parameters.items()}
         dcf_parameters = user_parameters | content
         return generate_dcf(dcf_parameters, template_path, user_output_files_directory, filename)

@@ -24,3 +24,9 @@ def concatenate_chunks(chunks):
     documents = [chunk["document"] for chunk in chunks]
     chunk_context = "\n".join(documents)
     return chunk_context
+
+def safe_cast(value):
+    try:
+        return float(value)
+    except ValueError:
+        return value
