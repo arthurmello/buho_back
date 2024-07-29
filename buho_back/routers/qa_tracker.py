@@ -1,18 +1,19 @@
 from fastapi import APIRouter
 import os
 from buho_back.models import AskQuestionRequest
-from buho_back.config import qa_tracker_directory, DATA_DIRECTORY
-from buho_back.services.storage.file_management import dump_json, load_json
+from buho_back.services.storage.file_management import (
+    dump_json,
+    load_json,
+    get_qa_tracker_directory,
+)
 
-# qa_tracker_directory = settings.QA_TRACKER_DIRECTORY
-data_directory = DATA_DIRECTORY
 
 router = APIRouter()
 
 
 def get_user_qa_tracker_file(deal: str = "deal", user: str = "user"):
 
-    return os.path.join(qa_tracker_directory(deal, user), f"{user}.json")
+    return os.path.join(get_qa_tracker_directory(deal, user), f"{user}.json")
 
 
 @router.get("/")

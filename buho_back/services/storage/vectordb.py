@@ -3,10 +3,8 @@ import chromadb
 from chromadb.api.types import QueryResult
 from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 from typing import List, Dict, Optional
-from buho_back.config import EMBEDDING_MODEL, OPENAI_API_KEY, vectordb_directory
-
-embedding_model = EMBEDDING_MODEL
-openai_api_key = OPENAI_API_KEY
+from buho_back.config import EMBEDDING_MODEL, OPENAI_API_KEY
+from buho_back.services.storage.file_management import get_vectordb_directory
 
 
 class VectorDbClient:
@@ -16,7 +14,7 @@ class VectorDbClient:
             path=path, settings=chromadb.config.Settings(anonymized_telemetry=False)
         )
         self.embedding_function = OpenAIEmbeddingFunction(
-            api_key=openai_api_key, model_name=embedding_model
+            api_key=OPENAI_API_KEY, model_name=EMBEDDING_MODEL
         )
         self.collection_name = "collection"
         self.client.clear_system_cache()
@@ -47,16 +45,13 @@ class VectorDbClient:
 
 
 def get_vectordb(deal, user):
-    # user_vectordb_directory = os.path.join(vectordb_directory, user)
-    user_vectordb_directory = vectordb_directory(deal, user)
-    if os.path.exists(user_vectordb_directory):
+    vectordb_directory = get_vectordb_directory(deal, user)
+    if os.path.exists(vectordb_directory):
         try:
-            vectordb_client = VectorDbClient(user_vectordb_directory)
+            vectordb_client = VectorDbClient(vectordb_directory)
             vectordb = vectordb_client.get_or_create_collection()
         except Exception as e:
-            print(
-                f"Couldn't load vectorstore from {user_vectordb_directory}. Error: {e}"
-            )
+            print(f"Couldn't load vectorstore from {vectordb_directory}. Error: {e}")
             vectordb = None
     else:
         vectordb = None

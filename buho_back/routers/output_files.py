@@ -1,23 +1,14 @@
 from fastapi import APIRouter
 from fastapi.responses import FileResponse
 from typing import Optional
-from buho_back.config import (
-    DATA_DIRECTORY,
-    input_files_directory,
-    summaries_directory,
-    INSTRUCTIONS_DIRECTORY,
-)
+from buho_back.config import INSTRUCTIONS_DIRECTORY
+
 from buho_back.models import OutputFileRequest
 from buho_back.services.file_generation.file_generation import generate_file
 import time
 import os
 import json
 
-data_directory = DATA_DIRECTORY
-# input_files_directory = settings.INPUT_FILES_DIRECTORY
-# vectordb_directory = settings.VECTORDB_DIRECTORY
-# summaries_directory = settings.SUMMARIES_DIRECTORY
-instructions_directory = INSTRUCTIONS_DIRECTORY
 router = APIRouter()
 
 
@@ -25,8 +16,8 @@ router = APIRouter()
 async def get_output_file_names():
     files = [
         f
-        for f in os.listdir(instructions_directory)
-        if os.path.isfile(os.path.join(instructions_directory, f))
+        for f in os.listdir(INSTRUCTIONS_DIRECTORY)
+        if os.path.isfile(os.path.join(INSTRUCTIONS_DIRECTORY, f))
     ]
     file_names = set([f.split(".")[0] for f in files])
     return file_names
@@ -34,7 +25,7 @@ async def get_output_file_names():
 
 @router.get("/user_parameters")
 async def get_output_file_user_parameters(filename):
-    file_path = os.path.join(instructions_directory, f"{filename}.json")
+    file_path = os.path.join(INSTRUCTIONS_DIRECTORY, f"{filename}.json")
     if os.path.isfile(file_path):
         with open(file_path, "r") as file:
             data = json.load(file)
