@@ -3,11 +3,10 @@ import chromadb
 from chromadb.api.types import QueryResult
 from chromadb.utils.embedding_functions import OpenAIEmbeddingFunction
 from typing import List, Dict, Optional
-from buho_back.config import settings
+from buho_back.config import EMBEDDING_MODEL, OPENAI_API_KEY, vectordb_directory
 
-vectordb_directory = settings.VECTORDB_DIRECTORY
-embedding_model = settings.EMBEDDING_MODEL
-openai_api_key = settings.OPENAI_API_KEY
+embedding_model = EMBEDDING_MODEL
+openai_api_key = OPENAI_API_KEY
 
 
 class VectorDbClient:
@@ -47,8 +46,9 @@ class VectorDbClient:
         return collection
 
 
-def get_vectordb(user_id):
-    user_vectordb_directory = os.path.join(vectordb_directory, user_id)
+def get_vectordb(deal, user):
+    # user_vectordb_directory = os.path.join(vectordb_directory, user)
+    user_vectordb_directory = vectordb_directory(deal, user)
     if os.path.exists(user_vectordb_directory):
         try:
             vectordb_client = VectorDbClient(user_vectordb_directory)

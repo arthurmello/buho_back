@@ -2,10 +2,10 @@ from pptx import Presentation
 from pptx.util import Inches, Pt
 from pptx.enum.text import PP_ALIGN
 from pptx.dml.color import RGBColor
-from buho_back.config import settings
+from buho_back.config import TEMPLATES_DIRECTORY
 import os
 
-templates_directory = settings.TEMPLATES_DIRECTORY
+templates_directory = TEMPLATES_DIRECTORY
 
 
 def generate_presentation(content, user_output_files_directory, filename):

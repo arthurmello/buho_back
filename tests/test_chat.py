@@ -26,12 +26,10 @@ chat_model = ChatModel()
 @pytest.fixture(scope="session", autouse=True)
 def cleanup_and_upload():
     # Cleanup before running tests
-    client.get(f"/input_files/reset?user_id={user}")
+    client.get(f"/input_files/reset?user={user}")
 
     # Upload test file
-    response_from_upload = client.post(
-        f"/input_files/upload?user_id={user}", files=files
-    )
+    response_from_upload = client.post(f"/input_files/upload?user={user}", files=files)
 
     if response_from_upload.status_code == 200:
         print("Files uploaded successfully!")
@@ -41,32 +39,30 @@ def cleanup_and_upload():
     yield
 
     # Cleanup after running tests
-    client.get(f"/input_files/reset?user_id={user}")
+    client.get(f"/input_files/reset?user={user}")
 
 
 def test_ask_question_and_get_chat_history():
     test_question = "summarize this file"
     body = {"question": test_question, "owner": "test_user"}
-    response_from_ask = client.post(
-        f"/chat/ask?user_id={user}", content=json.dumps(body)
-    )
+    response_from_ask = client.post(f"/chat/ask?user={user}", content=json.dumps(body))
     assert response_from_ask.status_code == 200
     assert "error" not in response_from_ask.json().keys()
     assert "answer" in response_from_ask.json().keys()
     assert "sources" in response_from_ask.json().keys()
     assert "history" in response_from_ask.json().keys()
 
-    response_from_chat_history = client.get(f"/chat/history/?user_id={user}")
+    response_from_chat_history = client.get(f"/chat/history/?user={user}")
     assert response_from_chat_history.status_code == 200
 
     chat_history = response_from_chat_history.json()["chat_history"]
     chat_history_questions = [item["question"] for item in chat_history]
     assert test_question in chat_history_questions
 
-    response_from_chat_history_reset = client.get(f"/chat/history/reset?user_id={user}")
+    response_from_chat_history_reset = client.get(f"/chat/history/reset?user={user}")
     assert response_from_chat_history_reset.status_code == 200
 
-    response_from_chat_history = client.get(f"/chat/history/?user_id={user}")
+    response_from_chat_history = client.get(f"/chat/history/?user={user}")
     chat_history = response_from_chat_history.json()["chat_history"]
     chat_history_questions = [item["question"] for item in chat_history]
     assert len(chat_history_questions) == 0
@@ -102,7 +98,7 @@ def test_answer_quality(evaluation_threshold=0.5):
 
         body = {"question": question, "owner": "test_user"}
         response_from_ask = client.post(
-            f"/chat/ask?user_id={user}", content=json.dumps(body)
+            f"/chat/ask?user={user}", content=json.dumps(body)
         )
         if "answer" in response_from_ask.json().keys():
             answer_to_evaluate = response_from_ask.json()["answer"]
