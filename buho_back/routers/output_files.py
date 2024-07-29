@@ -1,18 +1,23 @@
 from fastapi import APIRouter
 from fastapi.responses import FileResponse
 from typing import Optional
-from buho_back.config import settings
+from buho_back.config import (
+    DATA_DIRECTORY,
+    input_files_directory,
+    summaries_directory,
+    INSTRUCTIONS_DIRECTORY,
+)
 from buho_back.models import OutputFileRequest
 from buho_back.services.file_generation.file_generation import generate_file
 import time
 import os
 import json
 
-data_directory = settings.DATA_DIRECTORY
-input_files_directory = settings.INPUT_FILES_DIRECTORY
-vectordb_directory = settings.VECTORDB_DIRECTORY
-summaries_directory = settings.SUMMARIES_DIRECTORY
-instructions_directory = settings.INSTRUCTIONS_DIRECTORY
+data_directory = DATA_DIRECTORY
+# input_files_directory = settings.INPUT_FILES_DIRECTORY
+# vectordb_directory = settings.VECTORDB_DIRECTORY
+# summaries_directory = settings.SUMMARIES_DIRECTORY
+instructions_directory = INSTRUCTIONS_DIRECTORY
 router = APIRouter()
 
 
@@ -39,13 +44,15 @@ async def get_output_file_user_parameters(filename):
 
 
 @router.post("/generate")
-async def generate_output_file(body: OutputFileRequest, user_id: str = "user"):
+async def generate_output_file(
+    body: OutputFileRequest, deal: str = "deal", user: str = "user"
+):
 
     start_time = time.time()
     filename = body.filename
     user_parameters = body.user_parameters
     print(f"{body=}")
-    output_file_path = generate_file(filename, user_id, user_parameters)
+    output_file_path = generate_file(filename, deal, user, user_parameters)
     end_time = time.time()
     total_runtime = round(end_time - start_time, 2)
     print(f"Time to generate {filename}: {total_runtime} s")

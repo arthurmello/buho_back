@@ -9,11 +9,15 @@ from buho_back.services.file_generation.ppt import generate_presentation
 from buho_back.services.file_generation.doc import generate_doc
 from buho_back.services.file_generation.xlsx import generate_xlsx
 from buho_back.utils import ChatModel, concatenate_chunks
-from buho_back.config import settings
+from buho_back.config import (
+    summaries_directory,
+    output_files_directory,
+    INSTRUCTIONS_DIRECTORY,
+)
 
-summaries_directory = settings.SUMMARIES_DIRECTORY
-output_files_directory = settings.OUTPUT_FILES_DIRECTORY
-instructions_directory = settings.INSTRUCTIONS_DIRECTORY
+# summaries_directory = settings.SUMMARIES_DIRECTORY
+# output_files_directory = settings.OUTPUT_FILES_DIRECTORY
+instructions_directory = INSTRUCTIONS_DIRECTORY
 chat_model = ChatModel()
 
 
@@ -112,10 +116,10 @@ def extract_structured_data(instructions, user_summaries_directory):
     return structured_data
 
 
-def generate_file(filename, user_id, user_parameters):
-    user_summaries_directory = os.path.join(summaries_directory, user_id)
-    user_output_files_directory = os.path.join(output_files_directory, user_id)
-    user_vectordb = get_vectordb(user_id)
+def generate_file(filename, deal, user, user_parameters):
+    user_summaries_directory = summaries_directory(deal, user)
+    user_output_files_directory = output_files_directory(deal, user)
+    user_vectordb = get_vectordb(deal, user)
     instructions = load_json(os.path.join(instructions_directory, f"{filename}.json"))
     extension = instructions["extension"]
 

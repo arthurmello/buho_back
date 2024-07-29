@@ -21,12 +21,12 @@ from tenacity import (
 from buho_back.services.storage.vectordb import VectorDbClient
 from buho_back.services.storage.file_management import clear_directory
 from buho_back.utils import ChatModel
-from buho_back.config import settings
+from buho_back.config import EMBEDDING_MODEL, vectordb_directory, summaries_directory
 
 
-embedding_model = settings.EMBEDDING_MODEL
-vectordb_directory = settings.VECTORDB_DIRECTORY
-summaries_directory = settings.SUMMARIES_DIRECTORY
+embedding_model = EMBEDDING_MODEL
+# vectordb_directory = settings.VECTORDB_DIRECTORY
+# summaries_directory = settings.SUMMARIES_DIRECTORY
 chat_model = ChatModel()
 
 extension_loaders = {
@@ -72,9 +72,10 @@ def create_chunks(data, chunk_size=512, chunk_overlap=100):
 
 
 # create embeddings and save them in a vector store
-def create_vectordb(chunks, user_id):
-    user_vectordb_directory = os.path.join(vectordb_directory, user_id)
-    user_summaries_directory = os.path.join(summaries_directory, user_id)
+def create_vectordb(chunks, deal, user):
+    # user_vectordb_directory = os.path.join(vectordb_directory, user)
+    user_vectordb_directory = vectordb_directory(deal, user)
+    user_summaries_directory = summaries_directory(deal, user)
 
     # reset database
     clear_directory(user_vectordb_directory)
@@ -149,8 +150,8 @@ def summarize_and_aggregate_chunks(chunks, max_size=400000):
     return aggregated_chunks[0]
 
 
-def create_summaries(chunks, user_id):
-    user_summaries_directory = os.path.join(summaries_directory, user_id)
+def create_summaries(chunks, deal, user):
+    user_summaries_directory = summaries_directory(deal, user)
     print("Creating summaries...")
     clear_directory(user_summaries_directory)
     if not os.path.exists(user_summaries_directory):
