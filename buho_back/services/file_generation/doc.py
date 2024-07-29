@@ -12,17 +12,17 @@ def remove_section_breaks(doc_file_path):
     document.save(doc_file_path)
 
 
-def generate_doc(section_contents, user_output_files_directory, filename):
+def generate_doc(section_contents, output_files_directory, filename):
     pdf = MarkdownPdf(toc_level=2)
 
     combined_content = "\n\n".join(section_contents)
     print(combined_content)
     pdf.add_section(Section(combined_content))
 
-    if not os.path.exists(user_output_files_directory):
-        os.makedirs(user_output_files_directory)
+    if not os.path.exists(output_files_directory):
+        os.makedirs(output_files_directory)
 
-    pdf_file_path = os.path.join(user_output_files_directory, f"{filename}.pdf")
+    pdf_file_path = os.path.join(output_files_directory, f"{filename}.pdf")
     if os.path.exists(pdf_file_path):
         os.remove(pdf_file_path)
     pdf.save(pdf_file_path)

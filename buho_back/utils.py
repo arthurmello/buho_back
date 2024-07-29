@@ -1,13 +1,11 @@
 from openai import OpenAI
 from buho_back.config import OPENAI_API_KEY, LLM
 
-openai_api_key = OPENAI_API_KEY
-llm = LLM
-client = OpenAI(api_key=openai_api_key)
+client = OpenAI(api_key=OPENAI_API_KEY)
 
 
 class ChatModel:
-    def __init__(self, model=llm, temperature=0):
+    def __init__(self, model=LLM, temperature=0):
         self.model = model
         self.temperature = temperature
 

@@ -3,29 +3,26 @@ from concurrent.futures import ThreadPoolExecutor
 import ast
 import re
 
-from buho_back.services.storage.file_management import load_json
+from buho_back.services.storage.file_management import (
+    load_json,
+    get_summaries_directory,
+    get_output_files_directory,
+)
 from buho_back.services.storage.vectordb import get_vectordb
 from buho_back.services.file_generation.ppt import generate_presentation
 from buho_back.services.file_generation.doc import generate_doc
 from buho_back.services.file_generation.xlsx import generate_xlsx
 from buho_back.utils import ChatModel, concatenate_chunks
-from buho_back.config import (
-    summaries_directory,
-    output_files_directory,
-    INSTRUCTIONS_DIRECTORY,
-)
+from buho_back.config import INSTRUCTIONS_DIRECTORY
 
-# summaries_directory = settings.SUMMARIES_DIRECTORY
-# output_files_directory = settings.OUTPUT_FILES_DIRECTORY
-instructions_directory = INSTRUCTIONS_DIRECTORY
 chat_model = ChatModel()
 
 
-def create_general_context_for_output_file(user_summaries_directory):
+def create_general_context_for_output_file(summaries_directory):
     context = ""
-    for filename in os.listdir(user_summaries_directory):
-        if os.path.isfile(os.path.join(user_summaries_directory, filename)):
-            with open(os.path.join(user_summaries_directory, filename), "r") as file:
+    for filename in os.listdir(summaries_directory):
+        if os.path.isfile(os.path.join(summaries_directory, filename)):
+            with open(os.path.join(summaries_directory, filename), "r") as file:
                 summary_content = file.read()
             context += f'"{filename}":\n"{summary_content}"\n\n'
             return context
@@ -66,7 +63,7 @@ def write_final_prompt_for_section_generation(info_for_prompt):
     return prompt
 
 
-def generate_sections(instructions, filename, user_vectordb, user_summaries_directory):
+def generate_sections(instructions, filename, vectordb, summaries_directory):
     sections = instructions["sections"]
     extension = instructions["extension"]
 
@@ -75,13 +72,13 @@ def generate_sections(instructions, filename, user_vectordb, user_summaries_dire
         info_for_prompt[section_name] = {}
         info_for_prompt[section_name]["filename"] = filename
         info_for_prompt[section_name]["general_context"] = (
-            create_general_context_for_output_file(user_summaries_directory)
+            create_general_context_for_output_file(summaries_directory)
         )
         info_for_prompt[section_name]["section_name"] = section_name
 
         description = sections.get(section_name)
         info_for_prompt[section_name]["description"] = description
-        chunks = user_vectordb.retrieve_chunks(text=description)
+        chunks = vectordb.retrieve_chunks(text=description)
         info_for_prompt[section_name]["chunk_context"] = concatenate_chunks(chunks)
         info_for_prompt[section_name]["extension"] = extension
 
@@ -100,13 +97,13 @@ def generate_sections(instructions, filename, user_vectordb, user_summaries_dire
     return section_contents
 
 
-def extract_structured_data(instructions, user_summaries_directory):
-    pre_prompt_path = os.path.join(instructions_directory, instructions["pre_prompt"])
+def extract_structured_data(instructions, summaries_directory):
+    pre_prompt_path = os.path.join(INSTRUCTIONS_DIRECTORY, instructions["pre_prompt"])
     if os.path.isfile(pre_prompt_path):
         with open(pre_prompt_path, "r") as file:
             pre_prompt = file.read()
 
-    context = create_general_context_for_output_file(user_summaries_directory)
+    context = create_general_context_for_output_file(summaries_directory)
     prompt = pre_prompt + "\n\n" + context
     answer = chat_model.invoke(prompt)
     pattern = r"\{[^}]*\}"
@@ -117,35 +114,33 @@ def extract_structured_data(instructions, user_summaries_directory):
 
 
 def generate_file(filename, deal, user, user_parameters):
-    user_summaries_directory = summaries_directory(deal, user)
-    user_output_files_directory = output_files_directory(deal, user)
-    user_vectordb = get_vectordb(deal, user)
-    instructions = load_json(os.path.join(instructions_directory, f"{filename}.json"))
+    summaries_directory = get_summaries_directory(deal, user)
+    output_files_directory = get_output_files_directory(deal, user)
+    vectordb = get_vectordb(deal, user)
+    instructions = load_json(os.path.join(INSTRUCTIONS_DIRECTORY, f"{filename}.json"))
     extension = instructions["extension"]
 
     if extension == ".docx":
         section_contents = generate_sections(
-            instructions, filename, user_vectordb, user_summaries_directory
+            instructions, filename, vectordb, summaries_directory
         )
         output_file_path = generate_doc(
-            section_contents, user_output_files_directory, filename
+            section_contents, output_files_directory, filename
         )
 
     elif extension == ".pptx":
         section_contents = generate_sections(
-            instructions, filename, user_vectordb, user_summaries_directory
+            instructions, filename, vectordb, summaries_directory
         )
         content = ast.literal_eval(section_contents[0])
         output_file_path = generate_presentation(
-            content, user_output_files_directory, filename
+            content, output_files_directory, filename
         )
 
     elif extension == ".xlsx":
-        structured_data = extract_structured_data(
-            instructions, user_summaries_directory
-        )
+        structured_data = extract_structured_data(instructions, summaries_directory)
         output_file_path = generate_xlsx(
-            structured_data, user_output_files_directory, filename, user_parameters
+            structured_data, output_files_directory, filename, user_parameters
         )
 
     return output_file_path
