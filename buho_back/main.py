@@ -7,6 +7,7 @@ from buho_back.routers import (
     output_files as output_files_router,
     qa_tracker as qa_tracker_router,
     chat as chat_router,
+    deals as deals_router,
 )
 
 
@@ -36,6 +37,7 @@ app.include_router(
     output_files_router.router, prefix="/output_files", tags=["output files"]
 )
 app.include_router(chat_router.router, prefix="/chat", tags=["chat"])
+app.include_router(deals_router.router, prefix="/deals", tags=["deals"])
 
 if __name__ == "__main__":
     uvicorn.run(

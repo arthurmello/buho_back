@@ -23,8 +23,8 @@ router = APIRouter()
 
 
 @router.get("/")
-async def get_files(deal: str = "deal", user: str = "user"):
-    vectordb = get_vectordb(deal, user)
+async def get_files(user: str = "user", deal: str = "deal"):
+    vectordb = get_vectordb(user, deal)
     if vectordb:
         files_list = [
             name.split("/user/")[-1]
@@ -42,20 +42,20 @@ async def get_allowed_extensions():
 
 
 @router.get("/reset")
-async def reset_files(deal: str = "deal", user: str = "user"):
-    clear_directory(get_input_files_directory(deal, user))
-    clear_directory(get_vectordb_directory(deal, user))
-    clear_directory(get_summaries_directory(deal, user))
+async def reset_files(user: str = "user", deal: str = "deal"):
+    clear_directory(get_input_files_directory(user, deal))
+    clear_directory(get_vectordb_directory(user, deal))
+    clear_directory(get_summaries_directory(user, deal))
     return {"message": "Vector database reset successfully"}
 
 
 @router.post("/upload")
-async def upload_files(files: List[UploadFile], deal: str = "deal", user: str = "user"):
+async def upload_files(files: List[UploadFile], user: str = "user", deal: str = "deal"):
     start_time = time.time()
 
     chunks = []
-    input_files_directory = get_input_files_directory(deal, user)
-    await reset_files(deal, user)
+    input_files_directory = get_input_files_directory(user, deal)
+    await reset_files(user, deal)
     if not os.path.exists(input_files_directory):
         os.makedirs(input_files_directory)
 
@@ -80,8 +80,8 @@ async def upload_files(files: List[UploadFile], deal: str = "deal", user: str = 
     print(f"Total Tokens: {tokens}")
     print(f"Embedding Cost in USD: {embedding_cost:.6f}")
 
-    create_vectordb(chunks, deal, user)
-    create_summaries(chunks, deal, user)
+    create_vectordb(chunks, user, deal)
+    create_summaries(chunks, user, deal)
     clear_directory(input_files_directory)
 
     end_time = time.time()
