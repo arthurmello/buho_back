@@ -21,12 +21,13 @@ from tenacity import (
 from buho_back.services.storage.vectordb import VectorDbClient
 from buho_back.services.storage.file_management import clear_directory
 from buho_back.utils import ChatModel
-from buho_back.config import EMBEDDING_MODEL, vectordb_directory, summaries_directory
+from buho_back.config import EMBEDDING_MODEL
+from buho_back.services.storage.file_management import (
+    get_vectordb_directory,
+    get_summaries_directory,
+)
 
 
-embedding_model = EMBEDDING_MODEL
-# vectordb_directory = settings.VECTORDB_DIRECTORY
-# summaries_directory = settings.SUMMARIES_DIRECTORY
 chat_model = ChatModel()
 
 extension_loaders = {
@@ -41,7 +42,7 @@ extension_loaders = {
 
 
 def calculate_embedding_cost(texts):
-    enc = tiktoken.encoding_for_model(embedding_model)
+    enc = tiktoken.encoding_for_model(EMBEDDING_MODEL)
     total_tokens = sum([len(enc.encode(page)) for page in texts])
     # check prices here: https://openai.com/pricing
     return total_tokens, total_tokens / 1000 * 0.00013
@@ -73,21 +74,20 @@ def create_chunks(data, chunk_size=512, chunk_overlap=100):
 
 # create embeddings and save them in a vector store
 def create_vectordb(chunks, deal, user):
-    # user_vectordb_directory = os.path.join(vectordb_directory, user)
-    user_vectordb_directory = vectordb_directory(deal, user)
-    user_summaries_directory = summaries_directory(deal, user)
+    vectordb_directory = get_vectordb_directory(deal, user)
+    summaries_directory = get_summaries_directory(deal, user)
 
     # reset database
-    clear_directory(user_vectordb_directory)
-    clear_directory(user_summaries_directory)
+    clear_directory(vectordb_directory)
+    clear_directory(summaries_directory)
 
-    vectordb_client = VectorDbClient(user_vectordb_directory)
+    vectordb_client = VectorDbClient(vectordb_directory)
     vectordb = vectordb_client.get_or_create_collection()
     documents = [chunk.page_content for chunk in chunks]
     metadatas = [chunk.metadata for chunk in chunks]
     ids = [f"{uuid.uuid4()}" for _ in range(len(chunks))]
     vectordb.add(ids=ids, documents=documents, metadatas=metadatas)
-    print(f"Embeddings created on {user_vectordb_directory}.")
+    print(f"Embeddings created on {vectordb_directory}.")
     return vectordb
 
 
@@ -151,11 +151,11 @@ def summarize_and_aggregate_chunks(chunks, max_size=400000):
 
 
 def create_summaries(chunks, deal, user):
-    user_summaries_directory = summaries_directory(deal, user)
+    summaries_directory = get_summaries_directory(deal, user)
     print("Creating summaries...")
-    clear_directory(user_summaries_directory)
-    if not os.path.exists(user_summaries_directory):
-        os.makedirs(user_summaries_directory)
+    clear_directory(summaries_directory)
+    if not os.path.exists(summaries_directory):
+        os.makedirs(summaries_directory)
 
     files = get_unique_files_from_chunks(chunks)
 
@@ -164,7 +164,7 @@ def create_summaries(chunks, deal, user):
         print(f"... for file {filename}")
         file_chunks = get_chunk_content_for_file(chunks, file)
         file_summary = summarize_and_aggregate_chunks(file_chunks)
-        with open(f"{user_summaries_directory}/{filename}.txt", "w+") as text_file:
+        with open(f"{summaries_directory}/{filename}.txt", "w+") as text_file:
             text_file.write(file_summary)
 
-    print(f"Summaries created on {user_summaries_directory}.")
+    print(f"Summaries created on {summaries_directory}.")

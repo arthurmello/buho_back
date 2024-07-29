@@ -2,12 +2,12 @@ from fastapi import APIRouter, UploadFile
 from typing import List
 import time
 import os
-from buho_back.config import (
-    summaries_directory,
-    input_files_directory,
-    vectordb_directory,
+from buho_back.services.storage.file_management import (
+    clear_directory,
+    get_summaries_directory,
+    get_input_files_directory,
+    get_vectordb_directory,
 )
-from buho_back.services.storage.file_management import clear_directory
 from buho_back.services.storage.vectordb import get_vectordb
 from buho_back.services.preprocessing import (
     calculate_embedding_cost,
@@ -18,11 +18,6 @@ from buho_back.services.preprocessing import (
     extension_loaders,
 )
 
-# data_directory = settings.DATA_DIRECTORY
-# input_files_directory = settings.INPUT_FILES_DIRECTORY
-# vectordb_directory = settings.VECTORDB_DIRECTORY
-
-# summaries_directory = SUMMARIES_DIRECTORY
 allowed_extensions = extension_loaders.keys()
 router = APIRouter()
 
@@ -48,9 +43,9 @@ async def get_allowed_extensions():
 
 @router.get("/reset")
 async def reset_files(deal: str = "deal", user: str = "user"):
-    clear_directory(input_files_directory(deal, user))
-    clear_directory(vectordb_directory(deal, user))
-    clear_directory(summaries_directory(deal, user))
+    clear_directory(get_input_files_directory(deal, user))
+    clear_directory(get_vectordb_directory(deal, user))
+    clear_directory(get_summaries_directory(deal, user))
     return {"message": "Vector database reset successfully"}
 
 
@@ -59,16 +54,15 @@ async def upload_files(files: List[UploadFile], deal: str = "deal", user: str = 
     start_time = time.time()
 
     chunks = []
-    # user_input_files_directory = os.path.join(input_files_directory, user)
-    user_input_files_directory = input_files_directory(deal, user)
+    input_files_directory = get_input_files_directory(deal, user)
     await reset_files(deal, user)
-    if not os.path.exists(user_input_files_directory):
-        os.makedirs(user_input_files_directory)
+    if not os.path.exists(input_files_directory):
+        os.makedirs(input_files_directory)
 
     for file in files:
         if file.filename.endswith(tuple(allowed_extensions)):
             bytes_data = file.file.read()
-            filename = os.path.join(user_input_files_directory, file.filename)
+            filename = os.path.join(input_files_directory, file.filename)
             with open(filename, "wb") as f:
                 f.write(bytes_data)
             data = load_file(filename)
@@ -88,7 +82,7 @@ async def upload_files(files: List[UploadFile], deal: str = "deal", user: str = 
 
     create_vectordb(chunks, deal, user)
     create_summaries(chunks, deal, user)
-    # clear_directory(user_input_files_directory)
+    clear_directory(input_files_directory)
 
     end_time = time.time()
     total_runtime = round(end_time - start_time, 2)

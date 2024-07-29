@@ -5,11 +5,9 @@ from pptx.dml.color import RGBColor
 from buho_back.config import TEMPLATES_DIRECTORY
 import os
 
-templates_directory = TEMPLATES_DIRECTORY
 
-
-def generate_presentation(content, user_output_files_directory, filename):
-    template_path = os.path.join(templates_directory, "powerpoint.pptx")
+def generate_presentation(content, output_files_directory, filename):
+    template_path = os.path.join(TEMPLATES_DIRECTORY, "powerpoint.pptx")
 
     prs = Presentation(template_path)
 
@@ -85,10 +83,10 @@ def generate_presentation(content, user_output_files_directory, filename):
     slides = list(xml_slides)
     xml_slides.remove(slides[0])
 
-    if not os.path.exists(user_output_files_directory):
-        os.makedirs(user_output_files_directory)
+    if not os.path.exists(output_files_directory):
+        os.makedirs(output_files_directory)
 
-    ppt_file_path = os.path.join(user_output_files_directory, f"{filename}.pptx")
+    ppt_file_path = os.path.join(output_files_directory, f"{filename}.pptx")
     if os.path.exists(ppt_file_path):
         os.remove(ppt_file_path)
     prs.save(ppt_file_path)
