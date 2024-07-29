@@ -1,8 +1,8 @@
 from openai import OpenAI
-from buho_back.config import settings
+from buho_back.config import OPENAI_API_KEY, LLM
 
-openai_api_key = settings.OPENAI_API_KEY
-llm = settings.LLM
+openai_api_key = OPENAI_API_KEY
+llm = LLM
 client = OpenAI(api_key=openai_api_key)
 
 
@@ -24,6 +24,7 @@ def concatenate_chunks(chunks):
     documents = [chunk["document"] for chunk in chunks]
     chunk_context = "\n".join(documents)
     return chunk_context
+
 
 def safe_cast(value):
     try:

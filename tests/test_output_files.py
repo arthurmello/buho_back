@@ -13,10 +13,10 @@ user = "test_user"
 @pytest.fixture(autouse=True)
 def cleanup():
     # Cleanup before running tests
-    client.get(f"/input_files/reset?user_id={user}")
+    client.get(f"/input_files/reset?user={user}")
     yield
     # Cleanup after running tests
-    client.get(f"/input_files/reset?user_id={user}")
+    client.get(f"/input_files/reset?user={user}")
 
 
 def test_get_output_files():
@@ -29,16 +29,14 @@ def test_generate_output_files():
     file_for_test = "file_for_test.pdf"
     file_path = os.path.join(current_dir, file_for_test)
     files = [("files", open(file_path, "rb"))]
-    response_from_upload = client.post(
-        f"/input_files/upload?user_id={user}", files=files
-    )
+    response_from_upload = client.post(f"/input_files/upload?user={user}", files=files)
 
     response_from_output_files = client.get(f"/output_files/")
     output_files = response_from_output_files.json()
 
     for filename in output_files:
         response_from_generate_output_files = client.post(
-            f"/output_files/generate?user_id={user}",
+            f"/output_files/generate?user={user}",
             json={"filename": filename},
             headers={"Content-Type": "application/json"},
         )
