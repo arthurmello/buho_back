@@ -9,3 +9,11 @@ class AskQuestionRequest(BaseModel):
 class OutputFileRequest(BaseModel):
     filename: str
     user_parameters: dict | None = None
+
+
+class CreateDealRequest(BaseModel):
+    deal: str
+
+
+class DeleteDealRequest(BaseModel):
+    deal: str

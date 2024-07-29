@@ -29,8 +29,8 @@ def format_question_with_full_context(general_context, chunk_context, question):
     return question_with_full_context
 
 
-def get_answer_and_sources(vectordb, question, deal, user):
-    summaries_directory = get_summaries_directory(deal, user)
+def get_answer_and_sources(vectordb, question, user, deal):
+    summaries_directory = get_summaries_directory(user, deal)
     general_context = create_general_context(summaries_directory)
     source_chunks = vectordb.retrieve_chunks(text=question)
     chunk_context = concatenate_chunks(source_chunks)

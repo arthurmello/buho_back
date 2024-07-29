@@ -28,25 +28,64 @@ def load_json(path):
     return result
 
 
-def get_vectordb_directory(deal, user):
-    return os.path.join(f"{DATA_DIRECTORY}", deal, user, "vectordb")
+def get_vectordb_directory(user, deal):
+    return os.path.join(f"{DATA_DIRECTORY}", user, deal, "vectordb")
 
 
-def get_summaries_directory(deal, user):
-    return os.path.join(f"{DATA_DIRECTORY}", deal, user, "summaries")
+def get_summaries_directory(user, deal):
+    return os.path.join(f"{DATA_DIRECTORY}", user, deal, "summaries")
 
 
-def get_input_files_directory(deal, user):
-    return os.path.join(f"{DATA_DIRECTORY}", deal, user, "input_files")
+def get_input_files_directory(user, deal):
+    return os.path.join(f"{DATA_DIRECTORY}", user, deal, "input_files")
 
 
-def get_output_files_directory(deal, user):
-    return os.path.join(f"{DATA_DIRECTORY}", deal, user, "output_files")
+def get_output_files_directory(user, deal):
+    return os.path.join(f"{DATA_DIRECTORY}", user, deal, "output_files")
 
 
-def get_chat_history_file(deal, user):
-    return os.path.join(f"{DATA_DIRECTORY}", deal, user, "chat_history.json")
+def get_chat_history_file(user, deal):
+    return os.path.join(f"{DATA_DIRECTORY}", user, deal, "chat_history.json")
 
 
-def get_qa_tracker_directory(deal, user):
-    return os.path.join(f"{DATA_DIRECTORY}", deal, user, "qa_tracker")
+def get_qa_tracker_directory(user, deal):
+    return os.path.join(f"{DATA_DIRECTORY}", user, deal, "qa_tracker")
+
+
+def get_deals_for_user(user):
+    try:
+        user_directory = os.path.join(f"{DATA_DIRECTORY}", user)
+        sub_directories = os.listdir(user_directory)
+        print(sub_directories)
+        deals = [
+            entry
+            for entry in sub_directories
+            if os.path.isdir(os.path.join(user_directory, entry))
+        ]
+    except Exception as e:
+        print(f"Failed to get deals for user {user}. Error: {e}")
+        deals = []
+    return deals
+
+
+def create_deal_for_user(user, deal):
+    try:
+        deal_directory = os.path.join(f"{DATA_DIRECTORY}", user, deal)
+        os.makedirs(deal_directory)
+        message = "Deal created successfully!"
+    except Exception as e:
+        message = f"Failed to crete deal {deal} for user {user}. Error: {e}"
+    return message
+
+
+def delete_deal_for_user(user, deal):
+    try:
+        deal_directory = os.path.join(f"{DATA_DIRECTORY}", user, deal)
+        if os.path.exists(deal_directory):
+            shutil.rmtree(deal_directory)
+            message = "Deal deleted successfully!"
+        else:
+            message = f"Deal {deal} for user {user} does not exist."
+    except Exception as e:
+        message = f"Failed to delete deal {deal} for user {user}. Error: {e}"
+    return message
