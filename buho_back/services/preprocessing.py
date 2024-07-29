@@ -73,9 +73,9 @@ def create_chunks(data, chunk_size=512, chunk_overlap=100):
 
 
 # create embeddings and save them in a vector store
-def create_vectordb(chunks, deal, user):
-    vectordb_directory = get_vectordb_directory(deal, user)
-    summaries_directory = get_summaries_directory(deal, user)
+def create_vectordb(chunks, user, deal):
+    vectordb_directory = get_vectordb_directory(user, deal)
+    summaries_directory = get_summaries_directory(user, deal)
 
     # reset database
     clear_directory(vectordb_directory)
@@ -150,8 +150,8 @@ def summarize_and_aggregate_chunks(chunks, max_size=400000):
     return aggregated_chunks[0]
 
 
-def create_summaries(chunks, deal, user):
-    summaries_directory = get_summaries_directory(deal, user)
+def create_summaries(chunks, user, deal):
+    summaries_directory = get_summaries_directory(user, deal)
     print("Creating summaries...")
     clear_directory(summaries_directory)
     if not os.path.exists(summaries_directory):

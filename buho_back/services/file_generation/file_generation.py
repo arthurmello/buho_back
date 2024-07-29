@@ -113,10 +113,10 @@ def extract_structured_data(instructions, summaries_directory):
     return structured_data
 
 
-def generate_file(filename, deal, user, user_parameters):
-    summaries_directory = get_summaries_directory(deal, user)
-    output_files_directory = get_output_files_directory(deal, user)
-    vectordb = get_vectordb(deal, user)
+def generate_file(filename, user, deal, user_parameters):
+    summaries_directory = get_summaries_directory(user, deal)
+    output_files_directory = get_output_files_directory(user, deal)
+    vectordb = get_vectordb(user, deal)
     instructions = load_json(os.path.join(INSTRUCTIONS_DIRECTORY, f"{filename}.json"))
     extension = instructions["extension"]
 

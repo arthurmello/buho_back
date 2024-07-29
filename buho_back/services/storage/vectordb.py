@@ -44,8 +44,8 @@ class VectorDbClient:
         return collection
 
 
-def get_vectordb(deal, user):
-    vectordb_directory = get_vectordb_directory(deal, user)
+def get_vectordb(user, deal):
+    vectordb_directory = get_vectordb_directory(user, deal)
     if os.path.exists(vectordb_directory):
         try:
             vectordb_client = VectorDbClient(vectordb_directory)
