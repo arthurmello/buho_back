@@ -2,7 +2,6 @@
     "user_parameters": [
         "EBITDA growth rate",
         "Tax rate",
-        "D&A (%EBITDA)",
         "NWC (%EBITDA)",
         "Capital expenditures (%EBITDA)",
         "Discount rate (r)",

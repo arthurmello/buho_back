@@ -20,10 +20,14 @@ def find_best_scale(number):
     return scales[-1], scale_units[-1]
 
 def generate_dcf(input_variables, template_path, user_output_files_directory, filename):
-    scale, scale_units = find_best_scale(input_variables["EBITDA"])
+    print(input_variables)
+    scale, scale_units = find_best_scale(input_variables["EBIT"])
     input_variables["Scale"] = scale_units
-    input_variables["EBITDA"] = input_variables["EBITDA"]/scale
-    
+    input_variables["EBIT"] = input_variables["EBIT"]/scale
+    input_variables["D&A"] = input_variables["D&A"]/scale
+    input_variables["EBITDA"] = input_variables["EBIT"]+input_variables["D&A"]
+    input_variables["D&A (%EBITDA)"] = input_variables["D&A"]/input_variables["EBITDA"]
+
     # Open the existing Excel file
     workbook = openpyxl.load_workbook(template_path)
     

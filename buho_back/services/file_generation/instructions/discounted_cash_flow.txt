@@ -1,11 +1,13 @@
 Extract the following data from the given context, in a structured dictionary-like output:
-- EBITDA: the most recent value for the EBITDA, as a number. nothing else, just the full number, without any currency signs, dots or commas. ex.: if latest EBITDA is $ 20bi, just answer '20000000000'. your answer has to be an integer, no strings.,
+- EBIT: the most recent value for the EBIT (also called operating income), as a number. nothing else, just the full number, without any currency signs, dots or commas. ex.: if latest EBIT is $ 20bi, just answer '20000000000'. your answer has to be an integer, no strings.,
+- D&A: the most recent value for depreciation & amortization, as a number. nothing else, just the full number, without any currency signs, dots or commas. ex.: if latest D&A is $ 2bi, just answer '2000000000'. your answer has to be an integer, no strings.,
 - Last year of data: the latest year available in the EBITDA data, as a number (ex.: 2018).
 - Currency: the currency of the financial data, using ISO 4217. ex.: USD, EUR, GBP, etc.
 
 Here's an example of the expected output:
 {
-    "EBITDA":1000000000,
+    "EBIT":1000000000,
+    "D&A":10000000,
     "Last year of data":2010,
     "Currency":"USD",
 }
