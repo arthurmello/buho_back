@@ -7,6 +7,8 @@ from buho_back.services.storage.file_management import (
     get_summaries_directory,
     get_input_files_directory,
     get_vectordb_directory,
+    create_folder_for_user,
+    move_file_or_folder
 )
 from buho_back.services.storage.vectordb import get_vectordb
 from buho_back.services.preprocessing import (
@@ -48,6 +50,15 @@ async def reset_files(user: str = "user", deal: str = "deal"):
     clear_directory(get_summaries_directory(user, deal))
     return {"message": "Vector database reset successfully"}
 
+@router.post("/create_folder")
+async def create_folder(folder_path: str, user: str = "user", deal: str = "deal"):
+    message = create_folder_for_user(user, deal, folder_path)
+    return {"message": message}
+
+@router.post("/move")
+async def move(origin: str, destination: str = "", user: str = "user", deal: str = "deal"):
+    message = move_file_or_folder(origin, destination, user, deal)
+    return {"message": message}
 
 @router.post("/upload")
 async def upload_files(files: List[UploadFile], user: str = "user", deal: str = "deal"):
@@ -76,13 +87,10 @@ async def upload_files(files: List[UploadFile], user: str = "user", deal: str = 
     tokens, embedding_cost = calculate_embedding_cost(
         [chunk.page_content for chunk in chunks]
     )
-
     print(f"Total Tokens: {tokens}")
     print(f"Embedding Cost in USD: {embedding_cost:.6f}")
-
     create_vectordb(chunks, user, deal)
     create_summaries(chunks, user, deal)
-    clear_directory(input_files_directory)
 
     end_time = time.time()
     total_runtime = round(end_time - start_time, 2)
