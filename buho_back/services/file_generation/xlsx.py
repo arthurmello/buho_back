@@ -19,7 +19,7 @@ def find_best_scale(number):
     return scales[-1], scale_units[-1]
 
 
-def generate_dcf(input_variables, template_path, user_output_files_directory, filename):
+def generate_dcf(input_variables, template_path, output_files_directory, filename):
     print(input_variables)
     scale, scale_units = find_best_scale(input_variables["EBIT"])
     input_variables["Scale"] = scale_units
