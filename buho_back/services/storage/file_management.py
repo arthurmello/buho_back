@@ -140,6 +140,7 @@ def list_files_and_folders(user, deal):
 
     return items
 
+
 def delete_object_for_user(user, deal, obj):
     try:
         path = get_input_files_directory(user, deal)
@@ -148,3 +149,14 @@ def delete_object_for_user(user, deal, obj):
     except Exception as e:
         message = f"Failed to delete deal {deal} for user {user}. Error: {e}"
     return message
+
+
+def list_files(path):
+    items = []
+
+    for root, dirs, files in os.walk(path):
+        for name in files:
+            file_path = os.path.join(root, name)
+            items.append(os.path.relpath(file_path, path))
+
+    return items

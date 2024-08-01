@@ -10,6 +10,7 @@ from buho_back.services.storage.file_management import (
     create_folder_for_user,
     move_file_or_folder,
     list_files_and_folders,
+    list_files,
     delete_object_for_user,
 )
 from buho_back.services.storage.vectordb import get_vectordb
@@ -38,7 +39,7 @@ async def get_allowed_extensions():
 
 @router.get("/reset")
 async def reset_files(user: str = "user", deal: str = "deal"):
-    clear_directory(get_input_files_directory(user, deal))
+    # clear_directory(get_input_files_directory(user, deal))
     clear_directory(get_vectordb_directory(user, deal))
     clear_directory(get_summaries_directory(user, deal))
     return {"message": "Vector database reset successfully"}
@@ -66,11 +67,8 @@ async def delete_file_or_folder(user: str = "user", deal: str = "deal", obj: str
 
 @router.post("/upload")
 async def upload_files(files: List[UploadFile], user: str = "user", deal: str = "deal"):
-    start_time = time.time()
-
-    chunks = []
     input_files_directory = get_input_files_directory(user, deal)
-    await reset_files(user, deal)
+    # await reset_files(user, deal)
     if not os.path.exists(input_files_directory):
         os.makedirs(input_files_directory)
 
@@ -80,14 +78,29 @@ async def upload_files(files: List[UploadFile], user: str = "user", deal: str = 
             filename = os.path.join(input_files_directory, file.filename)
             with open(filename, "wb") as f:
                 f.write(bytes_data)
-            data = load_file(filename)
-            chunks.extend(create_chunks(data))
-            print(f"{filename=}")
-            print(f'Chunks for "{file.filename}" created.')
         else:
             print(
                 f'File "{file.filename}" extension is not supported. Supported extensions: {allowed_extensions}'
             )
+
+    return {"message": "Files uploaded successfully"}
+
+
+@router.post("/process")
+async def process_files(user: str = "user", deal: str = "deal"):
+    start_time = time.time()
+
+    chunks = []
+    input_files_directory = get_input_files_directory(user, deal)
+    filenames = list_files(input_files_directory)
+    await reset_files(user, deal)
+
+    for filename in filenames:
+        path = os.path.join(input_files_directory, filename)
+        data = load_file(path)
+        chunks.extend(create_chunks(data))
+        print(f'Chunks for "{filename}" processed.')
+
     tokens, embedding_cost = calculate_embedding_cost(
         [chunk.page_content for chunk in chunks]
     )
