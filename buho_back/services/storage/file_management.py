@@ -3,6 +3,7 @@ import shutil
 import json
 from pathlib import Path
 from buho_back.config import DATA_DIRECTORY
+from pathlib import Path
 
 
 def clear_directory(directory):
@@ -97,12 +98,53 @@ def create_folder_for_user(user, deal, folder_path):
         message = f"Failed to create folder {folder_path} for user {user}. Error: {e}"
     return message
 
+
 def move_file_or_folder(origin, destination, user, deal):
     try:
         origin_path = os.path.join(get_input_files_directory(user, deal), origin)
-        destination_path = os.path.join(get_input_files_directory(user, deal), destination)
+        destination_path = os.path.join(
+            get_input_files_directory(user, deal), destination
+        )
         shutil.move(str(origin_path), str(destination_path))
         message = "Folder moved successfully!"
     except Exception as e:
-        message = f"Failed to move {origin} to {destination} for user {user}. Error: {e}"
+        message = (
+            f"Failed to move {origin} to {destination} for user {user}. Error: {e}"
+        )
+    return message
+
+
+def list_files_and_folders(user, deal):
+    deal_directory = get_input_files_directory(user, deal)
+    items = []
+
+    for root, dirs, files in os.walk(deal_directory):
+        for name in dirs:
+            dir_path = os.path.join(root, name)
+            items.append(
+                {
+                    "name": name,
+                    "type": "folder",
+                    "path": os.path.relpath(dir_path, deal_directory),
+                }
+            )
+        for name in files:
+            file_path = os.path.join(root, name)
+            items.append(
+                {
+                    "name": name,
+                    "type": "file",
+                    "path": os.path.relpath(file_path, deal_directory),
+                }
+            )
+
+    return items
+
+def delete_object_for_user(user, deal, obj):
+    try:
+        path = get_input_files_directory(user, deal)
+        clear_directory(path)
+        message = "Deal deleted successfully!"
+    except Exception as e:
+        message = f"Failed to delete deal {deal} for user {user}. Error: {e}"
     return message

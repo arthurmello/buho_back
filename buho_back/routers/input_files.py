@@ -8,7 +8,9 @@ from buho_back.services.storage.file_management import (
     get_input_files_directory,
     get_vectordb_directory,
     create_folder_for_user,
-    move_file_or_folder
+    move_file_or_folder,
+    list_files_and_folders,
+    delete_object_for_user,
 )
 from buho_back.services.storage.vectordb import get_vectordb
 from buho_back.services.preprocessing import (
@@ -25,17 +27,8 @@ router = APIRouter()
 
 
 @router.get("/")
-async def get_files(user: str = "user", deal: str = "deal"):
-    vectordb = get_vectordb(user, deal)
-    if vectordb:
-        files_list = [
-            name.split("/user/")[-1]
-            for name in set([meta["source"] for meta in vectordb.get()["metadatas"]])
-        ]
-        files = [{"name": file} for file in files_list]
-    else:
-        files = []
-    return files
+async def get_files_and_folders(user: str = "user", deal: str = "deal"):
+    return list_files_and_folders(user, deal)
 
 
 @router.get("/allowed_extensions")
@@ -50,15 +43,26 @@ async def reset_files(user: str = "user", deal: str = "deal"):
     clear_directory(get_summaries_directory(user, deal))
     return {"message": "Vector database reset successfully"}
 
+
 @router.post("/create_folder")
 async def create_folder(folder_path: str, user: str = "user", deal: str = "deal"):
     message = create_folder_for_user(user, deal, folder_path)
     return {"message": message}
 
+
 @router.post("/move")
-async def move(origin: str, destination: str = "", user: str = "user", deal: str = "deal"):
+async def move(
+    origin: str, destination: str = "", user: str = "user", deal: str = "deal"
+):
     message = move_file_or_folder(origin, destination, user, deal)
     return {"message": message}
+
+
+@router.post("/delete")
+async def delete_file_or_folder(user: str = "user", deal: str = "deal", obj: str = ""):
+    message = delete_object_for_user(user, deal, obj)
+    return message
+
 
 @router.post("/upload")
 async def upload_files(files: List[UploadFile], user: str = "user", deal: str = "deal"):
