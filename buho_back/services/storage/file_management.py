@@ -81,11 +81,28 @@ def create_deal_for_user(user, deal):
 def delete_deal_for_user(user, deal):
     try:
         deal_directory = os.path.join(f"{DATA_DIRECTORY}", user, deal)
-        if os.path.exists(deal_directory):
-            shutil.rmtree(deal_directory)
-            message = "Deal deleted successfully!"
-        else:
-            message = f"Deal {deal} for user {user} does not exist."
+        clear_directory(deal_directory)
+        message = "Deal deleted successfully!"
     except Exception as e:
         message = f"Failed to delete deal {deal} for user {user}. Error: {e}"
+    return message
+
+
+def create_folder_for_user(user, deal, folder_path):
+    try:
+        directory = os.path.join(get_input_files_directory(user, deal), folder_path)
+        os.makedirs(directory)
+        message = "Folder created successfully!"
+    except Exception as e:
+        message = f"Failed to create folder {folder_path} for user {user}. Error: {e}"
+    return message
+
+def move_file_or_folder(origin, destination, user, deal):
+    try:
+        origin_path = os.path.join(get_input_files_directory(user, deal), origin)
+        destination_path = os.path.join(get_input_files_directory(user, deal), destination)
+        shutil.move(str(origin_path), str(destination_path))
+        message = "Folder moved successfully!"
+    except Exception as e:
+        message = f"Failed to move {origin} to {destination} for user {user}. Error: {e}"
     return message
