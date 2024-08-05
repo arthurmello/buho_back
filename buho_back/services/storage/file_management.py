@@ -6,11 +6,14 @@ from buho_back.config import DATA_DIRECTORY
 from pathlib import Path
 
 
-def clear_directory(directory):
-    if os.path.exists(directory):
-        if os.path.isdir(directory):
-            shutil.rmtree(directory)
-            print(f"{directory} cleared!")
+def clear_path(path):
+    if os.path.exists(path):
+        if os.path.isdir(path):
+            shutil.rmtree(path)
+            print(f"{path} cleared!")
+        elif os.path.isfile(path):
+            os.remove(path)
+            print(f"{path} file deleted!")
 
 
 def dump_json(data, path):
@@ -82,7 +85,7 @@ def create_deal_for_user(user, deal):
 def delete_deal_for_user(user, deal):
     try:
         deal_directory = os.path.join(f"{DATA_DIRECTORY}", user, deal)
-        clear_directory(deal_directory)
+        clear_path(deal_directory)
         message = "Deal deleted successfully!"
     except Exception as e:
         message = f"Failed to delete deal {deal} for user {user}. Error: {e}"
@@ -108,46 +111,47 @@ def move_file_or_folder(origin, destination, user, deal):
         shutil.move(str(origin_path), str(destination_path))
         message = "Folder moved successfully!"
     except Exception as e:
-        message = (
-            f"Failed to move {origin} to {destination} for user {user}. Error: {e}"
-        )
+        message = f"Failed to move {origin} to {destination}. Error: {e}"
+    print(message)
     return message
 
 
 def list_files_and_folders(user, deal):
+    def build_items(directory, base_directory, current_path):
+        folder_items = []
+        file_items = []
+        for entry in os.scandir(directory):
+            relative_path = os.path.join(current_path, entry.name)
+            if entry.is_dir():
+                folder_items.append(
+                    {
+                        "name": entry.name,
+                        "type": "folder",
+                        "path": relative_path,
+                        "items": build_items(entry.path, base_directory, relative_path),
+                    }
+                )
+            elif entry.is_file():
+                file_items.append(
+                    {"name": entry.name, "type": "file", "path": relative_path}
+                )
+        return folder_items + file_items
+
     deal_directory = get_input_files_directory(user, deal)
-    items = []
-
-    for root, dirs, files in os.walk(deal_directory):
-        for name in dirs:
-            dir_path = os.path.join(root, name)
-            items.append(
-                {
-                    "name": name,
-                    "type": "folder",
-                    "path": os.path.relpath(dir_path, deal_directory),
-                }
-            )
-        for name in files:
-            file_path = os.path.join(root, name)
-            items.append(
-                {
-                    "name": name,
-                    "type": "file",
-                    "path": os.path.relpath(file_path, deal_directory),
-                }
-            )
-
-    return items
+    return build_items(deal_directory, deal_directory, "")
 
 
 def delete_object_for_user(user, deal, obj):
     try:
-        path = get_input_files_directory(user, deal)
-        clear_directory(path)
-        message = "Deal deleted successfully!"
+        input_files_directory = get_input_files_directory(user, deal)
+        obj_path = os.path.join(input_files_directory, obj)
+        print(obj_path)
+        clear_path(obj_path)
+        message = "Object deleted successfully!"
     except Exception as e:
-        message = f"Failed to delete deal {deal} for user {user}. Error: {e}"
+        message = (
+            f"Failed to delete object {obj} for user {user}, deal {deal}. Error: {e}"
+        )
     return message
 
 

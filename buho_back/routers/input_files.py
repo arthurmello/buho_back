@@ -3,7 +3,7 @@ from typing import List
 import time
 import os
 from buho_back.services.storage.file_management import (
-    clear_directory,
+    clear_path,
     get_summaries_directory,
     get_input_files_directory,
     get_vectordb_directory,
@@ -23,6 +23,8 @@ from buho_back.services.preprocessing import (
     extension_loaders,
 )
 
+from buho_back.models import MoveRequest
+
 allowed_extensions = extension_loaders.keys()
 router = APIRouter()
 
@@ -39,9 +41,9 @@ async def get_allowed_extensions():
 
 @router.get("/reset")
 async def reset_files(user: str = "user", deal: str = "deal"):
-    # clear_directory(get_input_files_directory(user, deal))
-    clear_directory(get_vectordb_directory(user, deal))
-    clear_directory(get_summaries_directory(user, deal))
+    # clear_path(get_input_files_directory(user, deal))
+    clear_path(get_vectordb_directory(user, deal))
+    clear_path(get_summaries_directory(user, deal))
     return {"message": "Vector database reset successfully"}
 
 
@@ -52,9 +54,9 @@ async def create_folder(folder_path: str, user: str = "user", deal: str = "deal"
 
 
 @router.post("/move")
-async def move(
-    origin: str, destination: str = "", user: str = "user", deal: str = "deal"
-):
+async def move(request: MoveRequest, user, deal):
+    origin = request.originPath
+    destination = request.destinationPath
     message = move_file_or_folder(origin, destination, user, deal)
     return {"message": message}
 

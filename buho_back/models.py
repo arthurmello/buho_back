@@ -17,3 +17,8 @@ class CreateDealRequest(BaseModel):
 
 class DeleteDealRequest(BaseModel):
     deal: str
+
+
+class MoveRequest(BaseModel):
+    originPath: str
+    destinationPath: str
