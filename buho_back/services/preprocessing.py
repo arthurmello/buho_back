@@ -19,7 +19,7 @@ from tenacity import (
 )
 
 from buho_back.services.storage.vectordb import VectorDbClient
-from buho_back.services.storage.file_management import clear_directory
+from buho_back.services.storage.file_management import clear_path
 from buho_back.utils import ChatModel
 from buho_back.config import EMBEDDING_MODEL
 from buho_back.services.storage.file_management import (
@@ -78,8 +78,8 @@ def create_vectordb(chunks, user, deal):
     summaries_directory = get_summaries_directory(user, deal)
 
     # reset database
-    clear_directory(vectordb_directory)
-    clear_directory(summaries_directory)
+    clear_path(vectordb_directory)
+    clear_path(summaries_directory)
 
     vectordb_client = VectorDbClient(vectordb_directory)
     vectordb = vectordb_client.get_or_create_collection()
@@ -153,7 +153,7 @@ def summarize_and_aggregate_chunks(chunks, max_size=400000):
 def create_summaries(chunks, user, deal):
     summaries_directory = get_summaries_directory(user, deal)
     print("Creating summaries...")
-    clear_directory(summaries_directory)
+    clear_path(summaries_directory)
     if not os.path.exists(summaries_directory):
         os.makedirs(summaries_directory)
 
