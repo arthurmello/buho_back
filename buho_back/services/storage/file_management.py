@@ -56,6 +56,10 @@ def get_qa_tracker_directory(user, deal):
     return os.path.join(f"{DATA_DIRECTORY}", user, deal, "qa_tracker")
 
 
+def get_dashboard_data_directory(user, deal):
+    return os.path.join(f"{DATA_DIRECTORY}", user, deal, "dashboard_data.json")
+
+
 def get_deals_for_user(user):
     try:
         user_directory = os.path.join(f"{DATA_DIRECTORY}", user)

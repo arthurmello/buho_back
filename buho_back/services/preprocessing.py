@@ -19,14 +19,17 @@ from tenacity import (
 )
 
 from buho_back.services.storage.vectordb import VectorDbClient
-from buho_back.services.storage.file_management import clear_path
-from buho_back.utils import ChatModel
-from buho_back.config import EMBEDDING_MODEL
 from buho_back.services.storage.file_management import (
-    get_vectordb_directory,
+    clear_path,
+    dump_json,
     get_summaries_directory,
+    get_dashboard_data_directory,
+    get_vectordb_directory,
 )
+from buho_back.utils import ChatModel, extract_dict, extract_url
+from buho_back.config import EMBEDDING_MODEL
 
+from buho_back.services.answer import create_general_context
 
 chat_model = ChatModel()
 
@@ -168,3 +171,93 @@ def create_summaries(chunks, user, deal):
             text_file.write(file_summary)
 
     print(f"Summaries created on {summaries_directory}.")
+
+
+class GeneralInfo:
+    def __init__(self, user, deal):
+        self.user = user
+        self.deal = deal
+        self.summaries_directory = get_summaries_directory(user, deal)
+        self.general_context = create_general_context(self.summaries_directory)
+
+    def get_company_name(self):
+        prompt = f"Extract the company name from this summary. no text besides the company name. {self.general_context}"
+        return chat_model.invoke(prompt)
+
+    def get_summary(self):
+        company_name = self.get_company_name()
+        prompt = f"""Given a general context, write a one-paragraph summary for a company called {company_name}. Here's an example for Apple:
+            'Apple Inc. is a leading technology company that designs, manufactures, and markets consumer electronics,
+            software, and services. Its primary products include the iPhone, iPad, Mac computers, Apple Watch, and
+            Apple TV, all of which are powered by its proprietary iOS and macOS operating systems.
+            Apple's main sources of revenue are hardware sales, primarily from iPhones, complemented by services
+            revenue from the App Store, Apple Music, iCloud, and AppleCare. The company operates globally, with
+            significant market presence in North America, Europe, Greater China, and the Asia Pacific region.
+            Apple's innovative product ecosystem and strong brand loyalty drive its competitive edge and robust
+            financial performance.'
+            Here's some context on {company_name}:
+            {self.general_context}
+
+            Make sure your summary is concise and straight to the point.
+        """
+        return chat_model.invoke(prompt)
+
+    def get_logo_url(self):
+        company_name = self.get_company_name()
+        prompt = f"""give me a url for a company called {company_name} logo.
+            no text, just the URL like in this example:
+            https://upload.wikimedia.org/wikipedia/fr/9/91/Dataiku_logo.png
+        """
+        answer = chat_model.invoke(prompt)
+        return extract_url(answer)
+
+    def get_kpi(self):
+        prompt = f"""Extract the main 5 (max) financial indicators from this, in a structured format:
+            {self.general_context}
+            Here's an example of the expected format:
+            {{"operating_income": "350Mi USD", "gross_revenue": "700Mi USD", "net_working_capital": 1Bi USD"}}
+
+            just answer in this dict-like format, no extra text.
+            start your answer with "{{" and finish it with "}}", no extra formatting. avoid special characters, such as line breaks.
+        """
+        answer = chat_model.invoke(prompt)
+        return extract_dict(answer)
+
+    def get_dashboard_data(self):
+        prompt = ""
+
+    import concurrent.futures
+
+    def save_dashboard_data(self):
+        def get_company_name():
+            return self.get_company_name()
+
+        def get_logo_url():
+            return self.get_logo_url()
+
+        def get_summary():
+            return self.get_summary()
+
+        def get_kpi():
+            return self.get_kpi()
+
+        with concurrent.futures.ThreadPoolExecutor() as executor:
+            futures = {
+                executor.submit(get_company_name): "company_name",
+                executor.submit(get_logo_url): "company_logo",
+                executor.submit(get_summary): "deal_summary",
+                executor.submit(get_kpi): "kpi",
+            }
+
+            dashboard_data = {}
+            for future in concurrent.futures.as_completed(futures):
+                key = futures[future]
+                try:
+                    result = future.result()
+                    dashboard_data[key] = result
+                except Exception as exc:
+                    print(f"{key} generated an exception: {exc}")
+
+        dashboard_data_directory = get_dashboard_data_directory(self.user, self.deal)
+        dump_json(dashboard_data, dashboard_data_directory)
+        return dashboard_data
