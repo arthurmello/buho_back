@@ -21,6 +21,7 @@ from buho_back.services.preprocessing import (
     load_file,
     create_summaries,
     extension_loaders,
+    GeneralInfo,
 )
 
 from buho_back.models import MoveRequest
@@ -110,6 +111,9 @@ async def process_files(user: str = "user", deal: str = "deal"):
     print(f"Embedding Cost in USD: {embedding_cost:.6f}")
     create_vectordb(chunks, user, deal)
     create_summaries(chunks, user, deal)
+
+    general_info = GeneralInfo(user, deal)
+    general_info.save_dashboard_data()
 
     end_time = time.time()
     total_runtime = round(end_time - start_time, 2)
