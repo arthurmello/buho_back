@@ -23,9 +23,12 @@ def create_general_context(summaries_directory):
 
 
 def format_question_with_full_context(general_context, chunk_context, question):
-    question_with_full_context = f"{general_context} +\
+    question_with_full_context = f"""{general_context} +\
         Here's some specific context: {chunk_context}. + \
-        Now, answer this question: {question}"
+        Now, answer this question: {question}
+        Your answer should be in plain text.
+        Do not use LaTeX nor Markdown.
+        """
     return question_with_full_context
 
 
