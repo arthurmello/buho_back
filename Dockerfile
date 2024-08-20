@@ -1,5 +1,5 @@
 # Use an official Python runtime as a parent image
-FROM python:3.12.4
+FROM python:3.12.5
 
 # Install system dependencies
 RUN apt-get update && apt-get install -y \
