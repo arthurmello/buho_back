@@ -13,7 +13,7 @@ from buho_back.services.file_generation.ppt import generate_presentation
 from buho_back.services.file_generation.doc import generate_doc
 from buho_back.services.file_generation.xlsx import generate_xlsx
 from buho_back.utils import ChatModel, concatenate_chunks
-from buho_back.config import INSTRUCTIONS_DIRECTORY
+from buho_back.config import INSTRUCTIONS_DIRECTORY, HYBRID_SEARCH_PARAMS
 
 chat_model = ChatModel()
 
@@ -78,7 +78,7 @@ def generate_sections(instructions, filename, vectordb, summaries_directory):
 
         description = sections.get(section_name)
         info_for_prompt[section_name]["description"] = description
-        chunks = vectordb.retrieve_chunks(text=description)
+        chunks = vectordb.retrieve_chunks(text=description, params=HYBRID_SEARCH_PARAMS)
         info_for_prompt[section_name]["chunk_context"] = concatenate_chunks(chunks)
         info_for_prompt[section_name]["extension"] = extension
 

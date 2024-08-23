@@ -27,7 +27,7 @@ from buho_back.services.storage.file_management import (
     get_vectordb_directory,
 )
 from buho_back.utils import ChatModel, extract_dict, extract_url
-from buho_back.config import EMBEDDING_MODEL
+from buho_back.config import EMBEDDING_MODEL, CHUNKING_PARAMS
 
 from buho_back.services.answer import create_general_context
 
@@ -67,7 +67,9 @@ def load_file(file):
 
 
 # splitting data in chunks
-def create_chunks(data, chunk_size=512, chunk_overlap=100):
+def create_chunks(data, params=CHUNKING_PARAMS):
+    chunk_size = params["chunk_size"]
+    chunk_overlap = params["chunk_overlap"]
     text_splitter = RecursiveCharacterTextSplitter(
         chunk_size=chunk_size, chunk_overlap=chunk_overlap
     )
@@ -130,7 +132,8 @@ def aggregate_chunks(chunks, max_size):
     reraise=True,
 )
 def summarize(text):
-    prompt = f"summarize this in bullet points: {text}"
+    prompt = f"""summarize this in bullet points: {text}, cleaning all unnecessary stuff,
+        while keeping the maximum amount of relevant information possible"""
     answer = chat_model.invoke(prompt)
     return answer
 
@@ -144,12 +147,15 @@ def summarize_and_aggregate_chunks(chunks, max_size=400000):
     print(f"{number_of_chunks=}")
     print(f"{max_workers=}")
     print(f"{available_cpus=}")
-    while len(aggregated_chunks) > 1 or (
-        len(aggregated_chunks) == 1 and len(aggregated_chunks[0]) > max_size
-    ):
-        with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-            summarized_chunks = list(executor.map(summarize, aggregated_chunks))
-        aggregated_chunks = aggregate_chunks(summarized_chunks, max_size=max_size)
+    if len(aggregated_chunks) == 1:
+        aggregated_chunks[0] = summarize(aggregated_chunks[0])
+    else:
+        while len(aggregated_chunks) > 1 or (len(aggregated_chunks[0]) > max_size):
+            with concurrent.futures.ThreadPoolExecutor(
+                max_workers=max_workers
+            ) as executor:
+                summarized_chunks = list(executor.map(summarize, aggregated_chunks))
+            aggregated_chunks = aggregate_chunks(summarized_chunks, max_size=max_size)
     return aggregated_chunks[0]
 
 
@@ -212,7 +218,7 @@ class GeneralInfo:
         return extract_url(answer)
 
     def get_kpi(self):
-        prompt = f"""Extract the main 5 (max) financial indicators from this, in a structured format:
+        prompt = f"""Extract the 4 (max) main financial indicators from this, in a structured format:
             {self.general_context}
             Here's an example of the expected format:
             {{"operating_income": "350Mi USD", "gross_revenue": "700Mi USD", "net_working_capital": 1Bi USD"}}
@@ -223,10 +229,33 @@ class GeneralInfo:
         answer = chat_model.invoke(prompt)
         return extract_dict(answer)
 
+    def get_risks(self):
+        prompt = f"""List 3 main commercial risks, and 3 main technical risks from this deal
+            in a structured format:
+            {self.general_context}
+            Here's an example of the expected format:
+            {{
+                "technical": [
+                    "Data Center Dependence: Expanding and maintaining data centers is critical, with risks related to land, energy, and component availability.",
+                    "Supply Chain Disruptions: Limited suppliers for key components could hinder product manufacturing and delivery.",
+                    "Cybersecurity Threats: Ongoing risks from cyberattacks and data breaches could damage reputation and lead to financial losses."
+                ],
+                "commercial": [
+                    "Economic Vulnerability: Microsoft's performance is tied to global economic conditions, impacting demand for its products and services.",
+                    "Competitive Pressure: Intense competition from tech giants like Google, Amazon, and Apple in various segments could erode market share.",
+                    "Foreign Exchange Risk: Revenue and expenses from international operations are sensitive to currency fluctuations, which could impact profitability."
+                ]
+            }}
+
+            just answer in this dict-like format, no extra text.
+            make it very short and concise.
+            start your answer with "{{" and finish it with "}}", no extra formatting. avoid special characters, such as line breaks.
+        """
+        answer = chat_model.invoke(prompt)
+        return extract_dict(answer)
+
     def get_dashboard_data(self):
         prompt = ""
-
-    import concurrent.futures
 
     def save_dashboard_data(self):
         def get_company_name():
@@ -241,12 +270,16 @@ class GeneralInfo:
         def get_kpi():
             return self.get_kpi()
 
+        def get_risks():
+            return self.get_risks()
+
         with concurrent.futures.ThreadPoolExecutor() as executor:
             futures = {
                 executor.submit(get_company_name): "company_name",
                 executor.submit(get_logo_url): "company_logo",
                 executor.submit(get_summary): "deal_summary",
                 executor.submit(get_kpi): "kpi",
+                executor.submit(get_risks): "risks",
             }
 
             dashboard_data = {}
