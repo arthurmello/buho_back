@@ -24,27 +24,31 @@ class VectorDbClient:
             name=self.collection_name, embedding_function=self.embedding_function
         )
 
-        def retrieve_chunks(text, k=3, distance_threshold=None):
-            first_k = 10
+        def retrieve_chunks(text, params):
+            k_semantic = params["k_for_semantic_search"]
+            alpha = params["alpha_for_hybrid_search"]
+            k_hybrid = params["k_for_hybrid_search"]
+            distance_threshold = params["distance_threshold"]
+
             query_results = collection.query(
                 query_texts=text,
-                n_results=first_k,
+                n_results=k_semantic,
             )
             formatted_query_results = query_result_to_dict_list(query_results)
 
             for d in formatted_query_results:
                 similarity = jaccard_similarity(text, d.get("document", ""))
                 d["jaccard_similarity"] = similarity
-                d["semantic_similarity"] = 1 / d["distance"]
+                d["semantic_similarity"] = 1 - d["distance"]
                 d["hybrid_similarity"] = (
-                    d["jaccard_similarity"] * d["semantic_similarity"]
+                    d["jaccard_similarity"] * alpha
+                    + (1 - alpha) * d["semantic_similarity"]
                 )
 
             formatted_query_results.sort(
                 key=lambda x: x["hybrid_similarity"], reverse=True
             )
-            formatted_query_results = formatted_query_results[:k]
-
+            formatted_query_results = formatted_query_results[:k_hybrid]
             if distance_threshold:
                 filtered_formatted_query_results = [
                     result

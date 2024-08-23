@@ -1,42 +1,122 @@
 [
   {
-    "question": "What are the main product categories that Apple Inc. designs, manufactures, and markets?",
-    "answer": "Apple Inc. designs, manufactures, and markets smartphones (iPhone), personal computers (Mac), tablets (iPad), and wearables and accessories (including Apple Watch and AirPods)."
+    "question": "What were Microsoft's total revenues for the fiscal year 2023?",
+    "answer": "Microsoft's total revenues for fiscal year 2023 were $211 billion."
   },
   {
-    "question": "Which operating systems power Apple's iPhone and Mac product lines?",
-    "answer": "The iPhone product line is powered by the iOS operating system, while the Mac product line is powered by the macOS operating system."
+    "question": "How much operating income did Microsoft generate in 2023?",
+    "answer": "Microsoft generated over $88 billion in operating income in 2023."
   },
   {
-    "question": "What services are included under Apple's 'Wearables, Home and Accessories' category?",
-    "answer": "This category includes AirPods, Apple TV, Apple Watch, Beats products, HomePod mini, and accessories."
+    "question": "What was the total amount of shares repurchased by Microsoft during fiscal year 2023?",
+    "answer": "Microsoft repurchased 69 million shares, amounting to $18.4 billion during fiscal year 2023."
   },
   {
-    "question": "How does Apple provide customer support for its products?",
-    "answer": "Apple provides customer support through its AppleCare brand, offering fee-based service and support products, including access to Apple technical support and global repair and replacement services."
+    "question": "How much did Microsoft distribute in dividends in fiscal year 2023?",
+    "answer": "Microsoft distributed $20.233 billion in dividends in fiscal year 2023."
   },
   {
-    "question": "What are some of the key services offered by Apple under its Digital Content category?",
-    "answer": "Key services include the App Store, Apple Music, Apple TV+, Apple News+, Apple Arcade, and Apple Fitness+."
+    "question": "What was the main factor driving growth in Microsoft's Office Commercial revenue?",
+    "answer": "Growth in Office Commercial revenue was mainly driven by installed base growth and the shift from on-premises licensing to Office 365 subscriptions."
   },
   {
-    "question": "What is the role of Apple's cloud services?",
-    "answer": "Apple's cloud services store and keep customers' content up-to-date and available across multiple Apple devices and Windows personal computers."
+    "question": "What was the market share impact of Microsoft Edge browser as of 2023?",
+    "answer": "Microsoft Edge has taken market share for nine consecutive quarters as of 2023."
   },
   {
-    "question": "How does Apple distribute its products to customers?",
-    "answer": "Apple sells its products through both direct channels, such as its retail and online stores, and indirect channels, including third-party cellular network carriers, wholesalers, retailers, and resellers."
+    "question": "How much did Microsoft invest in clean energy, and what was the total capacity achieved?",
+    "answer": "Microsoft signed new power purchase agreements, bringing their total carbon-free energy capacity to over 13.5 gigawatts."
   },
   {
-    "question": "What are some of the competitive factors Apple faces in the market?",
-    "answer": "Apple faces competition based on price, product and service features, product quality and reliability, design innovation, and marketing and distribution capability."
+    "question": "What are the three interconnected ambitions that drive Microsoft's research and development efforts?",
+    "answer": "The three ambitions are to reinvent productivity and business processes, build the intelligent cloud and intelligent edge platform, and create more personal computing."
   },
   {
-    "question": "How does Apple ensure it stays competitive in rapidly advancing technological industries?",
-    "answer": "Apple invests heavily in research and development (R&D) to continually introduce innovative products, services, and technologies to the marketplace."
+    "question": "How did LinkedIn perform in fiscal year 2023?",
+    "answer": "LinkedIn's revenue surpassed $15 billion for the first time in fiscal year 2023."
   },
   {
-    "question": "What is the global significance of Apple's operations in terms of location?",
-    "answer": "Most of Apple's hardware products are manufactured by outsourcing partners primarily located in Asia, with some Mac computers manufactured in the U.S. and Ireland."
+    "question": "What steps is Microsoft taking to ensure responsible AI development?",
+    "answer": "Microsoft follows core AI principles like fairness, reliability and safety, privacy and security, inclusiveness, transparency, and accountability, and is working with industry leaders to develop AI regulations and governance globally."
+  },
+  {
+    "question": "What is Microsoft's mission?",
+    "answer": "Microsoft's mission is to empower every person and every organization on the planet to achieve more."
+  },
+  {
+    "question": "How is Microsoft integrating AI into its product offerings?",
+    "answer": "Microsoft is infusing AI capabilities across its product lines, including Microsoft 365, Azure, GitHub, LinkedIn, and Dynamics 365, with specific emphasis on tools like Copilot that enhance productivity and automate tasks."
+  },
+  {
+    "question": "What strategic advantages does Microsoft's cloud business have?",
+    "answer": "Microsoft's cloud business benefits from economies of scale, hybrid consistency, developer productivity, AI capabilities, and trusted security and compliance, which uniquely position it in the market."
+  },
+  {
+    "question": "What are Microsoft's primary areas of growth focus for the future?",
+    "answer": "Microsoft's primary growth areas include transforming the workplace with modern business applications, expanding cloud-based services, advancing AI, enhancing security solutions, and innovating in gaming and personal computing."
+  },
+  {
+    "question": "How does Microsoft plan to maintain its lead in AI technology?",
+    "answer": "Microsoft plans to maintain its lead by continuously investing in AI research and development, integrating AI across its product stack, and leveraging its exclusive partnership with OpenAI."
+  },
+  {
+    "question": "How is Microsoft addressing sustainability within its operations?",
+    "answer": "Microsoft aims to be carbon negative, water positive, and zero waste by 2030 and is actively reducing emissions, increasing renewable energy capacity, and implementing circular economy principles in its operations."
+  },
+  {
+    "question": "What are the key competitive threats Microsoft faces in the productivity and collaboration space?",
+    "answer": "Key competitors include Google (G Suite), Apple (iWork), Cisco Systems, Slack, Zoom, and Meta, all offering alternative productivity and collaboration tools."
+  },
+  {
+    "question": "How does Microsoft support digital transformation for its enterprise customers?",
+    "answer": "Microsoft provides comprehensive cloud services, AI-driven insights, and business applications like Dynamics 365 and Power Platform, enabling enterprises to optimize operations, engage customers, and innovate at scale."
+  },
+  {
+    "question": "What role does Microsoft's gaming division play in its overall strategy?",
+    "answer": "Gaming is a significant part of Microsoft's strategy, particularly through its Xbox Game Pass subscription service, which aims to redefine game distribution and play, and its acquisition of Activision Blizzard to strengthen its content portfolio."
+  },
+  {
+    "question": "How is Microsoft ensuring growth in the face of global economic volatility?",
+    "answer": "Microsoft is focusing on AI-driven innovation, cloud services, and cost management to align its revenue growth with a scalable and efficient cost structure, ensuring resilience in volatile markets."
+  },
+  {
+    "question": "What cultural values does Microsoft emphasize to ensure a thriving workplace?",
+    "answer": "Microsoft emphasizes a growth mindset, diversity and inclusion, employee well-being, and continuous learning to create a thriving workplace and drive innovation."
+  },
+  {
+    "question": "How does Microsoft contribute to addressing racial injustice and inequity?",
+    "answer": "Microsoft has launched several initiatives, including the Racial Equity Initiative, focusing on strengthening communities, engaging ecosystems, and increasing representation and inclusion within and beyond the company."
+  },
+  {
+    "question": "What is Microsoft's approach to addressing cybersecurity threats?",
+    "answer": "Microsoft employs AI-powered security solutions across its cloud platforms and collaborates with public and private sectors to enhance cyber resilience, offering end-to-end security coverage."
+  },
+  {
+    "question": "How is Microsoft leveraging AI to improve healthcare?",
+    "answer": "Microsoft has developed AI-powered tools like the DAX Copilot for clinical documentation, reducing documentation time for physicians and integrating AI with electronic health records systems like Epic."
+  },
+  {
+    "question": "What are the ethical considerations Microsoft is addressing in its AI development?",
+    "answer": "Microsoft is committed to responsible AI development, ensuring fairness, transparency, privacy, security, and inclusiveness, and working with global partners to set ethical AI standards and regulations."
+  },
+  {
+    "question": "How does Microsoft's partnership with OpenAI enhance its competitive position?",
+    "answer": "Microsoft's exclusive partnership with OpenAI allows it to integrate cutting-edge AI models like GPT-4 into its cloud services and consumer products, strengthening its AI leadership and providing unique value to customers."
+  },
+  {
+    "question": "In what ways is Microsoft addressing the skills gap in the digital economy?",
+    "answer": "Microsoft has launched initiatives like Skills for Jobs and AI Skills Initiative, offering digital and AI-focused learning resources through LinkedIn Learning, GitHub, and Microsoft Learn to bridge the skills gap globally."
+  },
+  {
+    "question": "How does Microsoft integrate sustainability into its business strategy?",
+    "answer": "Microsoft integrates sustainability by reducing its operational footprint, offering tools like the Microsoft Cloud for Sustainability to help customers manage their emissions, and investing in climate innovation."
+  },
+  {
+    "question": "What steps is Microsoft taking to support hybrid work environments?",
+    "answer": "Microsoft supports hybrid work by offering flexibility in work locations and schedules, and providing tools like Microsoft Teams and Viva to enhance productivity and employee engagement in hybrid scenarios."
+  },
+  {
+    "question": "How does Microsoft's investment in AI differentiate it from competitors?",
+    "answer": "Microsoft's investment in AI, particularly through its Copilot tools and integration across all layers of its tech stack, provides a unique, deeply embedded AI experience that enhances productivity, efficiency, and innovation across industries."
   }
 ]
