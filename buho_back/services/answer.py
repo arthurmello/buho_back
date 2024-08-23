@@ -1,6 +1,6 @@
 import os
 
-from buho_back.config import N_SOURCES_TO_DISPLAY
+from buho_back.config import N_SOURCES_TO_DISPLAY, HYBRID_SEARCH_PARAMS
 from buho_back.services.storage.file_management import get_summaries_directory
 from buho_back.utils import ChatModel, concatenate_chunks
 
@@ -35,7 +35,7 @@ def format_question_with_full_context(general_context, chunk_context, question):
 def get_answer_and_sources(vectordb, question, user, deal):
     summaries_directory = get_summaries_directory(user, deal)
     general_context = create_general_context(summaries_directory)
-    source_chunks = vectordb.retrieve_chunks(text=question)
+    source_chunks = vectordb.retrieve_chunks(text=question, params=HYBRID_SEARCH_PARAMS)
     chunk_context = concatenate_chunks(source_chunks)
     question_with_full_context = format_question_with_full_context(
         general_context, chunk_context, question
