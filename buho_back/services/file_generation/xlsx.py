@@ -26,9 +26,12 @@ def generate_dcf(input_variables, template_path, output_files_directory, filenam
     input_variables["EBIT"] = input_variables["EBIT"] / scale
     input_variables["D&A"] = input_variables["D&A"] / scale
     input_variables["EBITDA"] = input_variables["EBIT"] + input_variables["D&A"]
-    input_variables["D&A (%EBITDA)"] = (
-        input_variables["D&A"] / input_variables["EBITDA"]
-    )
+    if input_variables["EBITDA"] == 0:
+        input_variables["D&A (%EBITDA)"] = 0
+    else:
+        input_variables["D&A (%EBITDA)"] = (
+            input_variables["D&A"] / input_variables["EBITDA"]
+        )
 
     # Open the existing Excel file
     workbook = openpyxl.load_workbook(template_path)
