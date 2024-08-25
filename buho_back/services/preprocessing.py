@@ -133,7 +133,9 @@ def aggregate_chunks(chunks, max_size):
 )
 def summarize(text):
     prompt = f"""summarize this in bullet points: {text}, cleaning all unnecessary stuff,
-        while keeping the maximum amount of relevant information possible"""
+        while keeping the maximum amount of relevant information possible.
+        keep all financial indicators in the summary.
+        """
     answer = chat_model.invoke(prompt)
     return answer
 
