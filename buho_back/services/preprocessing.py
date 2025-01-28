@@ -132,9 +132,11 @@ def aggregate_chunks(chunks, max_size):
     reraise=True,
 )
 def summarize(text):
-    prompt = f"""summarize this in bullet points: {text}, cleaning all unnecessary stuff,
+    prompt = f"""summarize this {text},
         while keeping the maximum amount of relevant information possible.
-        keep all financial indicators in the summary.
+        the summary should contain all financial indicators available.
+        main ones are operating income, net income,
+        depreciation, amortization, revenue and gross margin
         """
     answer = chat_model.invoke(prompt)
     return answer
