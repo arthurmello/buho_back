@@ -132,7 +132,8 @@ def generate_file(filename, user, deal, user_parameters):
         section_contents = generate_sections(
             instructions, filename, vectordb, summaries_directory
         )
-        content = ast.literal_eval(section_contents[0])
+        content = section_contents[0].replace("```json", "").replace("```", "")
+        content = ast.literal_eval(content)
         output_file_path = generate_presentation(
             content, output_files_directory, filename
         )
